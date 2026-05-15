@@ -23,11 +23,12 @@ interface ChatCommandProps {
 	pluginStore: PluginStore;
 	onBack: () => void;
 	onCommand?: (cmd: string) => void;
+	onFirstInput?: () => void;
 }
 
 type ChatStatus = 'idle' | 'streaming' | 'thinking' | 'compacting';
 
-export default function ChatCommand({ settings, pluginStore, onBack, onCommand }: ChatCommandProps): React.JSX.Element {
+export default function ChatCommand({ settings, pluginStore, onBack, onCommand, onFirstInput }: ChatCommandProps): React.JSX.Element {
 	const theme = useTheme();
 	const [messages, setMessages] = useState<ChatMessageData[]>([]);
 	const [input, setInput] = useState('');
@@ -35,6 +36,7 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand }
 	const [streamBuffer, setStreamBuffer] = useState('');
 	const [memory, setMemory] = useState<WorkspaceMemory>(() => loadWorkspaceMemory());
 	const branchKey = useRef(resolveBranchKey());
+	const firedFirstInput = useRef(false);
 
 	const provider = resolveActiveProvider(settings);
 	const [paletteCursor, setPaletteCursor] = useState(0);
@@ -52,6 +54,27 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand }
 	const appendMessage = useCallback((msg: ChatMessageData) => {
 		setMessages(prev => [...prev, msg]);
 	}, []);
+
+	const extractErrorMessage = (err: unknown): string => {
+		if (!(err instanceof Error)) return String(err);
+		/* AI SDK RetryError — pull the last error's message */
+		const anyErr = err as unknown as Record<string, unknown>;
+		if (anyErr['lastError'] instanceof Error) {
+			return extractErrorMessage(anyErr['lastError']);
+		}
+		/* AI SDK APICallError — extract first line of message (skip URL/stack noise) */
+		const msg = err.message;
+		/* Rate limit: grab the human part before the quota metric line */
+		const rateLimitMatch = msg.match(/You exceeded[^\n]*/);
+		if (rateLimitMatch) {
+			const retryMatch = msg.match(/Please retry in ([\d.]+)s/);
+			const retryPart = retryMatch ? `  Retry in ${Math.ceil(parseFloat(retryMatch[1]))}s.` : '';
+			return `Rate limited: quota exceeded for this model.${retryPart}`;
+		}
+		/* Generic: first non-empty line only */
+		const firstLine = msg.split('\n').find(l => l.trim()) ?? msg;
+		return firstLine.trim();
+	};
 
 	const sendMessage = useCallback(async (text: string) => {
 		if (!provider) return;
@@ -126,6 +149,7 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand }
 					}
 				},
 			});
+			Promise.resolve(result.text).catch(() => { /* caught below via await */ });
 
 			const fullText = await result.text;
 			setStreamBuffer('');
@@ -148,7 +172,7 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand }
 			appendMessage({
 				id: `err-${Date.now()}`,
 				role: 'error',
-				content: err instanceof Error ? err.message : String(err),
+				content: extractErrorMessage(err),
 			});
 		} finally {
 			setStatus('idle');
@@ -214,7 +238,10 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand }
 			return;
 		}
 
-		if (char) setInput(prev => prev + char);
+		if (char) {
+			if (!firedFirstInput.current) { firedFirstInput.current = true; onFirstInput?.(); }
+			setInput(prev => prev + char);
+		}
 	});
 
 	const spinnerFrames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];

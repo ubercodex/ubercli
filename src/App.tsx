@@ -20,6 +20,7 @@ export default function App(): React.JSX.Element {
 	const [settings, setSettings] = useState<Settings>(() => loadSettings());
 	const [pluginStore, setPluginStore] = useState<PluginStore>(() => loadPluginStore());
 	const [memory, setMemory] = useState<WorkspaceMemory>(() => loadWorkspaceMemory());
+	const [hasTyped, setHasTyped] = useState(false);
 	const workspaceName = getWorkspaceName();
 
 	const handleSaveSettings = (updated: Settings) => {
@@ -95,12 +96,13 @@ export default function App(): React.JSX.Element {
 	return (
 		<ThemeContext.Provider value={theme}>
 			<Box flexDirection="column">
-				<Splash workspace={{ name: workspaceName, model: activeModel, profile: activeProfile }} />
+				<Splash workspace={{ name: workspaceName, model: activeModel, profile: activeProfile }} animated={!hasTyped} />
 				<ChatCommand
 					settings={settings}
 					pluginStore={pluginStore}
 					onBack={exit}
 					onCommand={handleChatCommand}
+					onFirstInput={() => setHasTyped(true)}
 				/>
 			</Box>
 		</ThemeContext.Provider>

@@ -19,19 +19,21 @@ const buildWave = (primary: string, secondary: string, accent: string, muted: st
 
 interface SplashProps {
 	workspace?: WorkspaceConfig;
+	animated?: boolean;
 }
 
-export default function Splash({ workspace = DEFAULT_WORKSPACE }: SplashProps): React.JSX.Element {
+export default function Splash({ workspace = DEFAULT_WORKSPACE, animated = true }: SplashProps): React.JSX.Element {
 	const theme = useTheme();
 	const waveColors = buildWave(theme.primary, theme.secondary, theme.accent, theme.border);
 	const [frame, setFrame] = useState(0);
 
 	useEffect(() => {
+		if (!animated) return;
 		const id = setInterval(() => {
-			setFrame(f => f + 1);
-		}, 80);
+			setFrame(f => (f + 1) % waveColors.length);
+		}, 220);
 		return () => clearInterval(id);
-	}, []);
+	}, [animated, waveColors.length]);
 
 	const getColColor = (col: number): string => {
 		const idx = (col + frame) % waveColors.length;
