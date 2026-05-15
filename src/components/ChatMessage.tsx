@@ -30,10 +30,15 @@ export default function ChatMessage({ message }: ChatMessageProps): React.JSX.El
 
 	if (message.role === 'tool') {
 		return (
-			<Box gap={1} marginBottom={0} paddingLeft={2}>
-				<Text color={theme.muted}>⚙</Text>
-				<Text color={theme.muted} bold>{message.toolName ?? 'tool'}</Text>
-				<Text color={theme.muted}>→</Text>
+			<Box
+				borderStyle="single"
+				borderColor={theme.border}
+				paddingX={1}
+				gap={2}
+				marginLeft={2}
+			>
+				<Text color={theme.secondary} bold>⚙ {message.toolName ?? 'tool'}</Text>
+				<Text color={theme.border}>│</Text>
 				<Text color={theme.muted}>{message.content}</Text>
 			</Box>
 		);
