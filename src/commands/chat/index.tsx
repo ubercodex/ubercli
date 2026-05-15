@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Box, Text, useInput } from 'ink';
 import { streamText, stepCountIs } from 'ai';
 import { useTheme } from '../../context/ThemeContext.js';
@@ -8,6 +8,15 @@ import { type Settings } from '../../types/settings.js';
 import { type PluginStore } from '../../types/plugins.js';
 import { resolveActiveProvider, getLanguageModel } from '../../llm.js';
 import { resolveActiveTools } from '../../pluginLoader.js';
+import {
+	loadWorkspaceMemory, saveWorkspaceMemory,
+	resolveBranchKey, buildSystemPrompt, appendTurns,
+} from '../../memory.js';
+import {
+	shouldCompact, compactBranchMemory,
+	estimateConversationTokens,
+} from '../../memoryCompactor.js';
+import { type WorkspaceMemory } from '../../types/memory.js';
 
 interface ChatCommandProps {
 	settings: Settings;
@@ -16,7 +25,7 @@ interface ChatCommandProps {
 	onCommand?: (cmd: string) => void;
 }
 
-type ChatStatus = 'idle' | 'streaming' | 'thinking';
+type ChatStatus = 'idle' | 'streaming' | 'thinking' | 'compacting';
 
 export default function ChatCommand({ settings, pluginStore, onBack, onCommand }: ChatCommandProps): React.JSX.Element {
 	const theme = useTheme();
@@ -24,6 +33,8 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand }
 	const [input, setInput] = useState('');
 	const [status, setStatus] = useState<ChatStatus>('idle');
 	const [streamBuffer, setStreamBuffer] = useState('');
+	const [memory, setMemory] = useState<WorkspaceMemory>(() => loadWorkspaceMemory());
+	const branchKey = useRef(resolveBranchKey());
 
 	const provider = resolveActiveProvider(settings);
 	const [paletteCursor, setPaletteCursor] = useState(0);
@@ -32,6 +43,11 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand }
 	const paletteFiltered = PALETTE_ITEMS.filter(
 		item => item.cmd.startsWith(input) || input === '/'
 	);
+
+	useEffect(() => {
+		branchKey.current = resolveBranchKey();
+		setMemory(loadWorkspaceMemory());
+	}, []);
 
 	const appendMessage = useCallback((msg: ChatMessageData) => {
 		setMessages(prev => [...prev, msg]);
@@ -54,12 +70,33 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand }
 			content: m.content,
 		})).filter(m => m.role === 'user' || m.role === 'assistant');
 
+		const convTokens = estimateConversationTokens([...history, { role: 'user', content: text }]);
+		const memTokens  = memory.branches[branchKey.current]?.tokenEstimate ?? 0;
+
+		let currentMemory = memory;
+
+		if (shouldCompact(settings, convTokens, memTokens)) {
+			setStatus('compacting');
+			try {
+				currentMemory = await compactBranchMemory(settings, currentMemory, branchKey.current);
+				saveWorkspaceMemory(currentMemory);
+				setMemory(currentMemory);
+			} catch {
+				/* compaction failed silently — continue without interrupting */
+			}
+		}
+
+		const systemPrompt = buildSystemPrompt(currentMemory, branchKey.current);
+
+		setStatus('streaming');
+
 		try {
 			const model = getLanguageModel(settings, provider);
-
 			const activeTools = resolveActiveTools(pluginStore);
+
 			const result = streamText({
 				model,
+				system: systemPrompt || undefined,
 				messages: [
 					...history,
 					{ role: 'user', content: text },
@@ -97,6 +134,15 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand }
 				role: 'assistant',
 				content: fullText,
 			});
+
+			/* persist turn to memory */
+			const updated = appendTurns(currentMemory, branchKey.current, [
+				{ role: 'user', content: text },
+				{ role: 'assistant', content: fullText },
+			]);
+			saveWorkspaceMemory(updated);
+			setMemory(updated);
+
 		} catch (err) {
 			setStreamBuffer('');
 			appendMessage({
@@ -107,7 +153,7 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand }
 		} finally {
 			setStatus('idle');
 		}
-	}, [messages, provider, settings, appendMessage]);
+	}, [messages, memory, provider, settings, pluginStore, appendMessage]);
 
 	const runPaletteItem = useCallback((cmd: string) => {
 		setInput('');
@@ -117,7 +163,7 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand }
 	}, [onBack, onCommand]);
 
 	useInput((char, key) => {
-		if (status === 'streaming' || status === 'thinking') return;
+		if (status === 'streaming' || status === 'thinking' || status === 'compacting') return;
 
 		/* ── palette open ── */
 		if (paletteOpen) {
@@ -191,6 +237,11 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand }
 					<Text color="#ef4444">  No provider configured — run /settings first</Text>
 				)}
 				<Text color={theme.muted}>  │  </Text>
+				<Text color={theme.muted} dimColor>mem:</Text>
+				<Text color={branchKey.current === '__default__' ? theme.muted : theme.secondary} dimColor>
+					{branchKey.current === '__default__' ? 'global' : branchKey.current}
+				</Text>
+				<Text color={theme.muted}>  │  </Text>
 				<Text color={theme.muted} dimColor>type / for commands · Esc to exit</Text>
 			</Box>
 
@@ -222,6 +273,13 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand }
 				<Box gap={1} marginBottom={1}>
 					<Text color={theme.muted}>{spinnerFrame}</Text>
 					<Text color={theme.muted} dimColor>Running tool…</Text>
+				</Box>
+			)}
+
+			{status === 'compacting' && (
+				<Box gap={1} marginBottom={1}>
+					<Text color={theme.muted}>{spinnerFrame}</Text>
+					<Text color={theme.secondary} dimColor>Compressing memory…</Text>
 				</Box>
 			)}
 
