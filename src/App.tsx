@@ -1,15 +1,36 @@
 import React, { useState } from 'react';
 import { Box, Text, useInput, useApp } from 'ink';
+import Splash from './Splash.js';
+import SettingsCommand from './commands/settings/index.js';
+import { type Settings, THEMES } from './types/settings.js';
+import { ThemeContext } from './context/ThemeContext.js';
+import { loadSettings, saveSettings, getWorkspaceName } from './store.js';
+
+type ActiveCommand = null | 'settings';
 
 export default function App(): React.JSX.Element {
 	const { exit } = useApp();
 	const [input, setInput] = useState<string>('');
+	const [activeCommand, setActiveCommand] = useState<ActiveCommand>(null);
+	const [settings, setSettings] = useState<Settings>(() => loadSettings());
+	const workspaceName = getWorkspaceName();
+
+	const handleCommand = (raw: string) => {
+		const cmd = raw.trim().toLowerCase();
+		if (cmd === '/settings') { setActiveCommand('settings'); return; }
+		if (cmd === '/exit' || cmd === '/quit') { exit(); return; }
+	};
+
+	const handleSaveSettings = (updated: Settings) => {
+		setSettings(updated);
+		saveSettings(updated);
+	};
 
 	useInput((char: string, key) => {
-		if (key.escape || (key.ctrl && char === 'c')) {
-			exit();
-			return;
-		}
+		if (activeCommand !== null) return;
+
+		if (key.ctrl && char === 'c') { exit(); return; }
+		if (key.escape) { setInput(''); return; }
 
 		if (key.backspace || key.delete) {
 			setInput(prev => prev.slice(0, -1));
@@ -17,30 +38,45 @@ export default function App(): React.JSX.Element {
 		}
 
 		if (key.return) {
+			handleCommand(input);
 			setInput('');
 			return;
 		}
 
-		if (char) {
-			setInput(prev => prev + char);
-		}
+		if (char) setInput(prev => prev + char);
 	});
 
+	const theme = THEMES[settings.theme];
+
+	if (activeCommand === 'settings') {
+		return (
+			<ThemeContext.Provider value={theme}>
+				<Box flexDirection="column">
+					<SettingsCommand
+						settings={settings}
+						onSave={handleSaveSettings}
+						onBack={() => setActiveCommand(null)}
+					/>
+				</Box>
+			</ThemeContext.Provider>
+		);
+	}
+
 	return (
-		<Box flexDirection="column" padding={1}>
-			<Box marginBottom={1}>
-				<Text bold color="cyan">UBER CLI</Text>
-			</Box>
+		<ThemeContext.Provider value={theme}>
+			<Box flexDirection="column">
+				<Splash workspace={{ name: workspaceName, model: settings.providers.anthropic.selectedModel || settings.providers.openai.selectedModel || settings.providers.google.selectedModel || '' }} />
 
-			<Box>
-				<Text color="green">{'> '}</Text>
-				<Text>{input}</Text>
-				<Text color="gray">█</Text>
-			</Box>
+				<Box paddingLeft={1} paddingBottom={1}>
+					<Text color={theme.primary}>{'> '}</Text>
+					<Text color={theme.accent}>{input}</Text>
+					<Text color={theme.muted}>█</Text>
+				</Box>
 
-			<Box marginTop={1}>
-				<Text dimColor>ESC or Ctrl+C to exit</Text>
+				<Box paddingLeft={1}>
+					<Text color={theme.muted} dimColor>/settings  /exit</Text>
+				</Box>
 			</Box>
-		</Box>
+		</ThemeContext.Provider>
 	);
 }

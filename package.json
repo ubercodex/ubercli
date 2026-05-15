@@ -1,6 +1,6 @@
 {
   "name": "uber-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "UBER CLI - powered by Ink",
   "type": "module",
   "bin": {
@@ -8,14 +8,15 @@
   },
   "scripts": {
     "start": "tsx src/cli.ts",
-    "dev": "tsx watch src/cli.ts"
+    "dev": "tsx watch src/cli.ts",
+    "build": "node scripts/bump-version.js && tsc"
   },
-  
   "dependencies": {
     "ink": "^5.2.0",
     "react": "^18.3.1"
   },
   "devDependencies": {
+    "@types/node": "^22.19.19",
     "@types/react": "^18.3.1",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
