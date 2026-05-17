@@ -48,14 +48,28 @@ echo "📁 Creating app directory at $APP_DIR..."
 mkdir -p $APP_DIR
 cd $APP_DIR
 
-# Clone or copy files (assuming you're running this from the repo)
+# Clone or copy files
 echo "📥 Copying application files..."
+
+# Find the plugin-registry directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REGISTRY_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Verify we found the right directory
+if [ ! -d "$REGISTRY_DIR/server" ]; then
+  echo "❌ Error: Cannot find server directory at $REGISTRY_DIR/server"
+  echo "Please run this script from: plugin-registry/deploy/"
+  echo "Current script location: $SCRIPT_DIR"
+  exit 1
+fi
+
+echo "📂 Found plugin-registry at: $REGISTRY_DIR"
 
 cp -r "$REGISTRY_DIR/server" "$APP_DIR/"
 cp -r "$REGISTRY_DIR/client" "$APP_DIR/"
 cp -r "$REGISTRY_DIR/shared" "$APP_DIR/"
+
+echo "✅ Files copied successfully"
 
 # Install server dependencies
 echo "📦 Installing server dependencies..."

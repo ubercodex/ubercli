@@ -44,10 +44,13 @@ See [DEPLOY.md](./DEPLOY.md) for full deployment instructions.
 Quick deploy to Ubuntu VPS:
 
 ```bash
+# From repo root
 cd plugin-registry/deploy
 chmod +x deploy.sh
 sudo ./deploy.sh ubercli.com your-email@example.com
 ```
+
+**Note:** Must be run from `plugin-registry/deploy/` directory.
 
 ## GitHub OAuth Setup
 

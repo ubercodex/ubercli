@@ -23,13 +23,16 @@ SSH into your Ubuntu server and run:
 ```bash
 # Clone the repo
 git clone https://github.com/ubercodex/ubercli.git
-cd ubercli/plugin-registry
 
-# Run deployment script
-cd deploy
+# Navigate to deploy directory
+cd ubercli/plugin-registry/deploy
+
+# Make script executable and run
 chmod +x deploy.sh
 sudo ./deploy.sh ubercli.com your-email@example.com
 ```
+
+**Important:** You must run the script from the `plugin-registry/deploy/` directory.
 
 The script will:
 - Install Node.js, Nginx, Certbot

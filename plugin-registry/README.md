@@ -31,7 +31,7 @@ npm run dev
 ### Production Deployment (Ubuntu VPS)
 
 ```bash
-cd deploy
+cd plugin-registry/deploy
 chmod +x deploy.sh
 sudo ./deploy.sh ubercli.com your-email@example.com
 ```
