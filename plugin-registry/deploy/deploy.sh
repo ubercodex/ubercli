@@ -136,7 +136,8 @@ echo "🔒 Setting file permissions..."
 chmod 600 "$APP_DIR/server/.env"
 chmod 600 "$APP_DIR/client/.env"
 
-# Protect database directory
+# Create and protect database directory
+mkdir -p "$APP_DIR/server/data"
 chmod 700 "$APP_DIR/server/data"
 
 # Make deployment scripts non-executable from web
