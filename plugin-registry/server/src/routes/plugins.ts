@@ -2,7 +2,29 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { db } from '../db/index.js';
 import { randomBytes } from 'crypto';
-import type { Plugin, PluginParameter } from '../../../shared/types.js';
+
+// Shared types
+interface PluginParameter {
+	name: string;
+	type: 'string' | 'number' | 'boolean';
+	description: string;
+	required: boolean;
+	default?: string | number | boolean;
+}
+
+interface Plugin {
+	id: string;
+	author: string;
+	name: string;
+	version: string;
+	description: string;
+	code: string;
+	parameters: PluginParameter[];
+	tags: string[];
+	downloads: number;
+	createdAt: string;
+	updatedAt: string;
+}
 
 const PluginParamSchema = z.object({
 	name: z.string(),
