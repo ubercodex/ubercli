@@ -65,7 +65,9 @@ export default function Layout({ children }: LayoutProps) {
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/6 border border-white/10 text-slate-200 hover:bg-white/10 transition-all"
                 >
-                  <img src={user.avatarUrl} alt={user.username} className="w-5 h-5 rounded-full" />
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold">
+                    {user.username.substring(0, 2).toUpperCase()}
+                  </div>
                   {user.username}
                 </button>
                 
@@ -79,7 +81,7 @@ export default function Layout({ children }: LayoutProps) {
                       Publish Plugin
                     </Link>
                     <Link
-                      to={`/profile/${user.username}`}
+                      to="/my-plugins"
                       onClick={() => setShowUserMenu(false)}
                       className="block px-4 py-3 text-sm text-slate-200 hover:bg-cyan-500/10 transition"
                     >
