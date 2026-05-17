@@ -11,6 +11,7 @@ import { resolveActiveTools } from '../../pluginLoader.js';
 import {
 	loadWorkspaceMemory, saveWorkspaceMemory,
 	resolveBranchKey, buildSystemPrompt, appendTurns,
+	getOrCreateBranchMemory,
 } from '../../memory.js';
 import {
 	shouldCompact, compactBranchMemory,
@@ -35,8 +36,10 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand, 
 	const [status, setStatus] = useState<ChatStatus>('idle');
 	const [streamBuffer, setStreamBuffer] = useState('');
 	const [memory, setMemory] = useState<WorkspaceMemory>(() => loadWorkspaceMemory());
+	const [compactionSummary, setCompactionSummary] = useState<string | null>(null);
 	const branchKey = useRef(resolveBranchKey());
 	const firedFirstInput = useRef(false);
+	const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
 
 	const provider = resolveActiveProvider(settings);
 	const [paletteCursor, setPaletteCursor] = useState(0);
@@ -49,6 +52,10 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand, 
 	useEffect(() => {
 		branchKey.current = resolveBranchKey();
 		setMemory(loadWorkspaceMemory());
+		
+		return () => {
+			if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+		};
 	}, []);
 
 	const appendMessage = useCallback((msg: ChatMessageData) => {
@@ -153,11 +160,20 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand, 
 
 			const fullText = await result.text;
 			setStreamBuffer('');
-			appendMessage({
-				id: `ai-${Date.now()}`,
-				role: 'assistant',
-				content: fullText,
-			});
+			
+			if (!fullText || fullText.trim() === '') {
+				appendMessage({
+					id: `err-${Date.now()}`,
+					role: 'error',
+					content: 'No output generated. The AI returned an empty response. This may be due to API issues, rate limits, or model configuration problems.',
+				});
+			} else {
+				appendMessage({
+					id: `ai-${Date.now()}`,
+					role: 'assistant',
+					content: fullText,
+				});
+			}
 
 			/* persist turn to memory */
 			const updated = appendTurns(currentMemory, branchKey.current, [
@@ -166,6 +182,35 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand, 
 			]);
 			saveWorkspaceMemory(updated);
 			setMemory(updated);
+			
+			/* Start idle timer for auto-compaction */
+			if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+			idleTimerRef.current = setTimeout(async () => {
+				const branch = getOrCreateBranchMemory(updated, branchKey.current);
+				if (branch.rawTurns.length > 0) {
+					setStatus('compacting');
+					setCompactionSummary('Organizing memory...');
+					try {
+						const compacted = await compactBranchMemory(settings, updated, branchKey.current);
+						saveWorkspaceMemory(compacted);
+						setMemory(compacted);
+						
+						/* Generate brief summary */
+						const recentTurns = branch.rawTurns.slice(-6);
+						const summary = recentTurns
+							.filter(t => t.role === 'user')
+							.slice(-2)
+							.map(t => t.content.split('\n')[0].substring(0, 60))
+							.join(', ');
+						setCompactionSummary(`💾 Saved: ${summary}${summary.length > 50 ? '...' : ''}`);
+						setTimeout(() => setCompactionSummary(null), 5000);
+					} catch {
+						setCompactionSummary(null);
+					} finally {
+						setStatus('idle');
+					}
+				}
+			}, 15000);
 
 		} catch (err) {
 			setStreamBuffer('');
@@ -307,6 +352,13 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand, 
 				<Box gap={1} marginBottom={1}>
 					<Text color={theme.muted}>{spinnerFrame}</Text>
 					<Text color={theme.secondary} dimColor>Compressing memory…</Text>
+				</Box>
+			)}
+			
+			{/* Compaction summary */}
+			{compactionSummary && status === 'idle' && (
+				<Box marginBottom={1} paddingX={2} paddingY={0} borderStyle="round" borderColor={theme.secondary}>
+					<Text color={theme.secondary} dimColor>{compactionSummary}</Text>
 				</Box>
 			)}
 

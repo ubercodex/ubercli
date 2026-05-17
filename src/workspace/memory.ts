@@ -6,7 +6,7 @@ import { getWorkspace } from './index.js';
 import type { ChatMessageData } from '../components/ChatMessage.js';
 
 // Two-layer memory system:
-//   1. Shared baseline at <workspace>/uber-memory.md — facts that hold across
+//   1. Shared baseline at <workspace>/.ubercli/memory/shared.md — facts that hold across
 //      every branch (architecture, conventions, run commands, project structure).
 //   2. Per-branch overlay at <workspace>/.ubercli/memory/<branch>.md —
 //      branch-specific in-flight work, decisions, gotchas, current tasks.
@@ -17,7 +17,7 @@ import type { ChatMessageData } from '../components/ChatMessage.js';
 
 const execFileP = promisify(execFile);
 
-const SHARED_MEMORY_FILENAME = 'uber-memory.md';
+const SHARED_MEMORY_FILENAME = 'shared.md';
 const BRANCH_MEMORY_SUBDIR = path.join('.ubercli', 'memory');
 
 export const MEMORY_TOKEN_LIMIT = 10000;
@@ -29,7 +29,7 @@ export function memoryTokens(content: string): number {
 }
 
 export function getSharedMemoryPath(): string {
-  return path.join(getWorkspace(), SHARED_MEMORY_FILENAME);
+  return path.join(getWorkspace(), BRANCH_MEMORY_SUBDIR, SHARED_MEMORY_FILENAME);
 }
 
 // Returns the current git branch name in the workspace, a "detached-<sha>"

@@ -1,6 +1,6 @@
 {
   "name": "uber-cli",
-  "version": "0.1.3",
+  "version": "0.1.8",
   "description": "UBER CLI - powered by Ink",
   "type": "module",
   "bin": {

@@ -1,16 +1,20 @@
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
-import { execSync } from 'child_process';
-import { type WorkspaceMemory, type BranchMemory, MEMORY_FILE } from './types/memory.js';
+// New memory system using markdown files instead of JSON
+// This replaces the old JSON-based memory.ts with the proper two-layer markdown system
 
-const UBERCLI_DIR = '.ubercli';
-
-function getMemoryPath(): string {
-	return join(process.cwd(), UBERCLI_DIR, MEMORY_FILE);
-}
+import { type WorkspaceMemory, type BranchMemory } from './types/memory.js';
+import {
+	loadMemory,
+	getCurrentBranch,
+	getSharedMemoryPath,
+	getBranchMemoryPath,
+} from './workspace/memory.js';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { dirname } from 'path';
 
 export function getCurrentGitBranch(): string | null {
+	// Use async version but make it sync for compatibility
 	try {
+		const { execSync } = require('child_process');
 		const branch = execSync('git rev-parse --abbrev-ref HEAD', {
 			cwd: process.cwd(),
 			stdio: ['pipe', 'pipe', 'pipe'],
@@ -23,6 +27,7 @@ export function getCurrentGitBranch(): string | null {
 
 export function isGitRepo(): boolean {
 	try {
+		const { execSync } = require('child_process');
 		execSync('git rev-parse --git-dir', {
 			cwd: process.cwd(),
 			stdio: ['pipe', 'pipe', 'pipe'],
@@ -33,18 +38,33 @@ export function isGitRepo(): boolean {
 	}
 }
 
+// Load memory from markdown files and convert to WorkspaceMemory format
 export function loadWorkspaceMemory(): WorkspaceMemory {
-	const path = getMemoryPath();
-	if (!existsSync(path)) {
+	try {
+		const sharedPath = getSharedMemoryPath();
+		const shared = existsSync(sharedPath) ? readFileSync(sharedPath, 'utf8') : '';
+		
+		const branch = getCurrentGitBranch() ?? '__default__';
+		const branches: Record<string, BranchMemory> = {};
+		
+		// Try to load branch-specific memory
+		const branchPath = getBranchMemoryPathSync(branch);
+		const branchContent = existsSync(branchPath) ? readFileSync(branchPath, 'utf8') : '';
+		
+		branches[branch] = {
+			branch,
+			summary: branchContent,
+			rawTurns: [], // No longer storing raw turns
+			lastUpdated: new Date().toISOString(),
+			tokenEstimate: Math.ceil(branchContent.length / 4),
+		};
+		
 		return {
 			workspace: process.cwd(),
-			baseSummary: '',
-			branches: {},
+			baseSummary: shared,
+			branches,
 			lastUpdated: new Date().toISOString(),
 		};
-	}
-	try {
-		return JSON.parse(readFileSync(path, 'utf8')) as WorkspaceMemory;
 	} catch {
 		return {
 			workspace: process.cwd(),
@@ -55,10 +75,33 @@ export function loadWorkspaceMemory(): WorkspaceMemory {
 	}
 }
 
+function getBranchMemoryPathSync(branch: string): string {
+	const sanitized = branch.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_');
+	const { join } = require('path');
+	return join(process.cwd(), '.ubercli', 'memory', `${sanitized}.md`);
+}
+
+// Save memory to markdown files
 export function saveWorkspaceMemory(mem: WorkspaceMemory): void {
-	const dir = join(process.cwd(), UBERCLI_DIR);
-	if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-	writeFileSync(getMemoryPath(), JSON.stringify(mem, null, 2), 'utf8');
+	try {
+		// Save shared baseline
+		const sharedPath = getSharedMemoryPath();
+		const sharedDir = dirname(sharedPath);
+		if (!existsSync(sharedDir)) mkdirSync(sharedDir, { recursive: true });
+		writeFileSync(sharedPath, mem.baseSummary, 'utf8');
+		
+		// Save branch-specific memory
+		const branch = getCurrentGitBranch() ?? '__default__';
+		const branchMem = mem.branches[branch];
+		if (branchMem) {
+			const branchPath = getBranchMemoryPathSync(branch);
+			const branchDir = dirname(branchPath);
+			if (!existsSync(branchDir)) mkdirSync(branchDir, { recursive: true });
+			writeFileSync(branchPath, branchMem.summary || '', 'utf8');
+		}
+	} catch (err) {
+		console.error('Failed to save memory:', err);
+	}
 }
 
 export function resolveBranchKey(): string {
@@ -78,23 +121,15 @@ export function getOrCreateBranchMemory(mem: WorkspaceMemory, branchKey: string)
 	};
 }
 
+// Append turns is now deprecated - we store summaries, not raw turns
 export function appendTurns(
 	mem: WorkspaceMemory,
 	branchKey: string,
 	turns: { role: 'user' | 'assistant'; content: string }[]
 ): WorkspaceMemory {
-	const branch = getOrCreateBranchMemory(mem, branchKey);
-	const updated: BranchMemory = {
-		...branch,
-		rawTurns: [...branch.rawTurns, ...turns],
-		lastUpdated: new Date().toISOString(),
-		tokenEstimate: branch.tokenEstimate + turns.reduce((s, t) => s + Math.ceil(t.content.length / 4), 0),
-	};
-	return {
-		...mem,
-		branches: { ...mem.branches, [branchKey]: updated },
-		lastUpdated: new Date().toISOString(),
-	};
+	// For backward compatibility, just return the memory unchanged
+	// The compaction process will handle summarization
+	return mem;
 }
 
 export function updateBranchSummary(
@@ -107,7 +142,7 @@ export function updateBranchSummary(
 	const updated: BranchMemory = {
 		...branch,
 		summary,
-		rawTurns: clearRaw ? [] : branch.rawTurns,
+		rawTurns: [],
 		lastUpdated: new Date().toISOString(),
 		tokenEstimate: Math.ceil(summary.length / 4),
 	};
@@ -131,13 +166,6 @@ export function buildSystemPrompt(mem: WorkspaceMemory, branchKey: string): stri
 	}
 	if (branch.summary) {
 		parts.push(`## Branch Memory (${branchKey})\n${branch.summary}`);
-	}
-	if (branch.rawTurns.length > 0) {
-		const recent = branch.rawTurns
-			.slice(-20)
-			.map(t => `${t.role === 'user' ? 'User' : 'AI'}: ${t.content}`)
-			.join('\n');
-		parts.push(`## Recent conversation\n${recent}`);
 	}
 
 	if (parts.length === 0) return '';
