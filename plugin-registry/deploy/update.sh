@@ -146,29 +146,22 @@ chmod 600 "$APP_DIR/client/.env" 2>/dev/null || true
 chmod 700 "$APP_DIR/server/data"
 chmod -R 755 "$APP_DIR/client/dist"
 
-# Start the service
-echo "▶️  Starting service..."
-systemctl start $SERVICE_NAME
+# Restart service
+echo "🔄 Restarting service..."
+systemctl restart ubercli-registry
 
-# Wait a moment for service to start
-sleep 2
+# Reload nginx to pick up new static files
+echo "🔄 Reloading nginx..."
+nginx -t && systemctl reload nginx
 
-# Check service status
-if systemctl is-active --quiet $SERVICE_NAME; then
-  echo ""
-  echo "✅ Update completed successfully!"
-  echo ""
-  echo "📊 Service Status:"
-  systemctl status $SERVICE_NAME --no-pager -l | head -10
-  echo ""
-  echo "📜 Recent logs:"
-  journalctl -u $SERVICE_NAME -n 5 --no-pager
-  echo ""
-  echo "🌐 Application is running"
+# Verify service status
+echo "✅ Checking service status..."
+if systemctl is-active --quiet ubercli-registry; then
+  echo "✅ Service is running"
+  systemctl status ubercli-registry --no-pager -l
 else
-  echo ""
-  echo "❌ Service failed to start!"
-  echo ""
+  echo "❌ Service failed to start"
+  journalctl -u ubercli-registry -n 50 --no-pager
   echo "📜 Error logs:"
   journalctl -u $SERVICE_NAME -n 20 --no-pager
   echo ""
