@@ -72,7 +72,7 @@ export default function Home() {
             </h1>
 
             <p className="text-slate-400 text-lg leading-relaxed mb-8 max-w-lg">
-              Extend your AI-powered terminal with community-built plugins. Browse, install, and publish tools that unlock infinite possibilities.
+              Discover and share custom AI tools for Uber CLI. Describe what you need, AI generates the code, and you can publish it here for everyone.
             </p>
 
             <div className="flex flex-wrap gap-4">
@@ -93,10 +93,10 @@ export default function Home() {
             </div>
 
             <div className="mt-10 flex items-center gap-4 flex-wrap">
-              <span className="text-slate-600 text-xs uppercase tracking-widest font-semibold">Powered by</span>
-              <span className="px-3 py-1 text-xs font-semibold bg-cyan-500/8 text-cyan-400 border border-cyan-500/20 rounded-full">Fastify</span>
-              <span className="px-3 py-1 text-xs font-semibold bg-indigo-500/8 text-indigo-400 border border-indigo-500/20 rounded-full">React</span>
-              <span className="px-3 py-1 text-xs font-semibold bg-violet-500/8 text-violet-400 border border-violet-500/20 rounded-full">SQLite</span>
+              <span className="text-slate-600 text-xs uppercase tracking-widest font-semibold">Works with</span>
+              <span className="px-3 py-1 text-xs font-semibold bg-cyan-500/8 text-cyan-400 border border-cyan-500/20 rounded-full">Anthropic</span>
+              <span className="px-3 py-1 text-xs font-semibold bg-indigo-500/8 text-indigo-400 border border-indigo-500/20 rounded-full">Google</span>
+              <span className="px-3 py-1 text-xs font-semibold bg-violet-500/8 text-violet-400 border border-violet-500/20 rounded-full">OpenAI</span>
             </div>
           </div>
 
@@ -110,11 +110,15 @@ export default function Home() {
                 <span className="ml-2 text-xs text-slate-500 font-mono">uber /plugins</span>
               </div>
               <div className="p-5 font-mono text-sm leading-7">
-                <div><span className="text-slate-500">$</span> <span className="text-cyan-400">uber /plugins install</span> <span className="text-violet-400">weather</span></div>
-                <div className="text-slate-500 text-xs mt-1">⟳ Fetching from registry...</div>
-                <div className="text-cyan-400 text-xs mt-1">✓ <span className="text-slate-300">Downloaded</span> <span className="text-green-400">weather@1.2.0</span></div>
-                <div className="text-cyan-400 text-xs">✓ <span className="text-slate-300">Installed to</span> <span className="text-green-400">~/.ubercli/plugins/</span></div>
-                <div className="mt-2 text-slate-300 text-xs">Plugin ready! Try: <span className="text-cyan-400">uber "What's the weather in Tokyo?"</span></div>
+                <div><span className="text-slate-500">$</span> <span className="text-cyan-400">uber</span></div>
+                <div className="text-slate-500 text-xs">Uber CLI v0.1.2 · claude-sonnet-4-5</div>
+                <div className="mt-2"><span className="text-slate-500">&gt;</span> <span className="text-white">/plugins</span></div>
+                <div className="text-slate-500 text-xs mt-1">→ + New tool</div>
+                <div className="mt-2 text-slate-300 text-xs">Describe what the tool should do:</div>
+                <div className="text-violet-400 text-xs">Fetch weather data from wttr.in API</div>
+                <div className="mt-1 text-slate-500 text-xs">⟳ Generating with AI...</div>
+                <div className="text-cyan-400 text-xs mt-1">✓ <span className="text-slate-300">Created</span> <span className="text-green-400">getWeather.ts</span></div>
+                <div className="mt-2 text-slate-300 text-xs">Tool ready! Now you can ask about weather.</div>
                 <div className="mt-3"><span className="text-slate-500">&gt;</span> <span className="animate-blink text-cyan-400">▌</span></div>
               </div>
             </div>
@@ -127,13 +131,15 @@ export default function Home() {
         <div className="flex gap-12 animate-scroll-left whitespace-nowrap">
           {[...Array(2)].map((_, i) => (
             <div key={i} className="flex gap-12">
-              <span className="text-cyan-500/60 text-xs font-mono tracking-widest uppercase">Browse Plugins</span>
+              <span className="text-cyan-500/60 text-xs font-mono tracking-widest uppercase">AI-Generated Tools</span>
               <span className="text-slate-600">·</span>
-              <span className="text-violet-500/60 text-xs font-mono tracking-widest uppercase">Publish Your Own</span>
+              <span className="text-violet-500/60 text-xs font-mono tracking-widest uppercase">Plugin System</span>
               <span className="text-slate-600">·</span>
-              <span className="text-cyan-500/60 text-xs font-mono tracking-widest uppercase">GitHub OAuth</span>
+              <span className="text-cyan-500/60 text-xs font-mono tracking-widest uppercase">Tool Profiles</span>
               <span className="text-slate-600">·</span>
-              <span className="text-violet-500/60 text-xs font-mono tracking-widest uppercase">Open Source</span>
+              <span className="text-violet-500/60 text-xs font-mono tracking-widest uppercase">Multi-Provider</span>
+              <span className="text-slate-600">·</span>
+              <span className="text-cyan-500/60 text-xs font-mono tracking-widest uppercase">Open Source</span>
               <span className="text-slate-600">·</span>
             </div>
           ))}
@@ -149,19 +155,19 @@ export default function Home() {
             </div>
             <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">Your terminal. Supercharged.</h2>
             <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-              Uber CLI is a multi-provider AI agent that lives in your terminal. Anthropic, OpenAI, Google — pick your weapon.
-              Tool calling, memory, plugins, and infinite possibilities included.
+              An AI-powered terminal assistant built with Ink and TypeScript. Chat with multiple LLM providers, 
+              create custom tools with AI, and manage tool profiles — all from your terminal.
             </p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
-              { icon: '🤖', title: 'Multi-Provider AI', desc: 'Switch between Claude, GPT-4, and Gemini without rewriting anything.' },
-              { icon: '🔧', title: '13+ Built-in Tools', desc: 'File management, web search, browser control, code analysis — ready out of the box.' },
-              { icon: '🔌', title: 'Plugin System', desc: 'Drop a .mjs file into ~/.ubercli/plugins/ and it becomes a tool. That simple.' },
-              { icon: '💾', title: 'Memory & Context', desc: 'Per-project memory that persists between sessions. The AI learns your codebase.' },
-              { icon: '♾️', title: 'Infinite Context', desc: 'Automatic context compaction keeps long sessions running indefinitely.' },
-              { icon: '🛡️', title: 'Tool Approval', desc: 'Sensitive operations ask before running. Approve once or always. Your call.' },
+              { icon: '🤖', title: 'Multi-Provider AI', desc: 'Switch between multiple AI providers and models. Configure your preferred provider and start chatting.' },
+              { icon: '🔌', title: 'Plugin System', desc: 'Create custom tools by describing what you want. AI generates the code for you.' },
+              { icon: '📦', title: 'Tool Profiles', desc: 'Group tools into named profiles. Activate a profile to restrict AI to only those tools.' },
+              { icon: '💾', title: 'Workspace Memory', desc: 'Two-layer memory system: shared baseline + per-branch overlay for git repos.' },
+              { icon: '🎨', title: 'Multiple Themes', desc: 'Choose from multiple color themes to customize your terminal experience.' },
+              { icon: '🔐', title: 'Encrypted Keys', desc: 'API keys stored with strong encryption, derived from your machine identity.' },
             ].map((feature, i) => (
               <div key={i} className="reveal opacity-0 translate-y-5 transition-all duration-600 bg-[#0d0d24]/60 backdrop-blur-xl border border-cyan-500/12 rounded-2xl p-6 hover:border-cyan-500/30 hover:shadow-lg hover:shadow-cyan-500/10 transition-all group">
                 <div className="text-3xl mb-4">{feature.icon}</div>
@@ -187,18 +193,18 @@ export default function Home() {
               <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">Share everywhere.</span>
             </h2>
             <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-              Publish your plugins to the registry and make them available to the entire Uber CLI community.
-              One command to install, zero configuration needed.
+              Share your AI-generated tools with the community. Discover plugins built by developers worldwide 
+              and extend your CLI with new capabilities.
             </p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-5 reveal opacity-0 translate-y-5 transition-all duration-600">
               {[
-                { emoji: '📦', title: 'One-Command Install', desc: 'uber /plugins install <name> — that\'s it. No npm, no config, no hassle.' },
-                { emoji: '🚀', title: 'Instant Publishing', desc: 'Authenticate with GitHub, upload your plugin, and it\'s live in seconds.' },
-                { emoji: '🔍', title: 'Searchable Registry', desc: 'Browse by tags, author, or description. Find exactly what you need.' },
-                { emoji: '📊', title: 'Download Stats', desc: 'See how many people use your plugin. Track popularity over time.' },
+                { emoji: '📦', title: 'Easy Discovery', desc: 'Browse and search community-built tools. Find the perfect plugin for your workflow.' },
+                { emoji: '🚀', title: 'Simple Publishing', desc: 'Share your AI-generated tools with the community. Help others extend their CLI.' },
+                { emoji: '🔍', title: 'Searchable Registry', desc: 'Filter by tags, author, or description. Find exactly what you need.' },
+                { emoji: '📊', title: 'Community Stats', desc: 'See popular plugins and track downloads. Discover what the community loves.' },
               ].map((item, i) => (
                 <div key={i} className="flex gap-4 items-start">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 bg-violet-500/15 border border-violet-500/25">
@@ -224,7 +230,7 @@ export default function Home() {
                   </svg>
                 </div>
                 <p className="text-slate-400 mb-6">
-                  Browse hundreds of community-built plugins. From weather APIs to database tools, there's something for everyone.
+                  Browse community-built plugins. Discover tools for APIs, databases, automation, and more.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {['Weather', 'Database', 'API', 'Automation', 'DevOps', 'Utilities'].map(tag => (

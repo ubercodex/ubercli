@@ -93,7 +93,7 @@ cp /tmp/server.env.backup "$APP_DIR/server/.env"
 # Update dependencies and rebuild
 cd "$APP_DIR/server"
 echo "📦 Installing server dependencies..."
-npm install --production
+npm install
 echo "🔨 Building server..."
 npm run build
 
