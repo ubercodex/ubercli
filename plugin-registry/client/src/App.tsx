@@ -4,7 +4,7 @@ import Layout from './components/Layout';
 import NewHome from './pages/NewHome';
 import Registry from './pages/Registry';
 import Contact from './pages/Contact';
-import Publish from './pages/Publish';
+import Publish from './pages/PublishNew';
 import AuthCallback from './pages/AuthCallback';
 import AdminDashboard from './pages/AdminDashboard';
 import PluginDetail from './pages/PluginDetail';

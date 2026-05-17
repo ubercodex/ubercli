@@ -1,13 +1,19 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 interface PluginParameter {
   name: string;
-  type: string;
+  type: 'string' | 'number' | 'boolean';
   description: string;
   required: boolean;
-  default?: string | number | boolean;
+}
+
+interface PluginFile {
+  name: string;
+  description: string;
+  params: PluginParameter[];
+  code: string;
 }
 
 export default function Publish() {
