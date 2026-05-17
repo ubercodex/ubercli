@@ -95,6 +95,7 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 					parameters: string;
 					tags: string;
 					downloads: number;
+					status: string;
 					created_at: string;
 					updated_at: string;
 			  }
@@ -118,6 +119,7 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 			downloads: row.downloads + 1,
 			createdAt: row.created_at,
 			updatedAt: row.updated_at,
+			status: row.status as 'pending' | 'approved' | 'rejected',
 		};
 
 		return plugin;
