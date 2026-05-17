@@ -140,8 +140,10 @@ chmod 600 "$APP_DIR/client/.env"
 mkdir -p "$APP_DIR/server/data"
 chmod 700 "$APP_DIR/server/data"
 
-# Make deployment scripts non-executable from web
-chmod 600 "$APP_DIR/deploy/"*.sh
+# Make deployment scripts non-executable from web (if they exist)
+if [ -d "$APP_DIR/deploy" ]; then
+  chmod 600 "$APP_DIR/deploy/"*.sh 2>/dev/null || true
+fi
 
 # Ensure node_modules are not web-accessible
 find "$APP_DIR" -name "node_modules" -type d -exec chmod 700 {} \;
