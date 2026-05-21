@@ -393,7 +393,7 @@ export default function Publish() {
             <div className="flex gap-3">
               <span className="text-cyan-400 font-bold">3.</span>
               <div>
-                <strong>Create Tool:</strong> Navigate to the bottom and select "+ New tool", then describe what you want (e.g., "Fetch weather from wttr.in")
+                <strong>Create Tool:</strong> Navigate to the bottom and select "+ New tool", then describe what you want (e.g., "I want to know the price of gold")
               </div>
             </div>
             <div className="flex gap-3">
