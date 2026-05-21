@@ -87,9 +87,9 @@ export default function MyPlugins() {
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-violet-500/10 rounded-3xl blur-2xl"></div>
                 <div className="relative text-8xl mb-6">📦</div>
               </div>
-              <h2 className="text-3xl font-black text-white mb-4">No Plugins Yet</h2>
+              <h2 className="text-3xl font-black text-white mb-4">No Published Plugins Yet</h2>
               <p className="text-slate-400 text-lg mb-8 max-w-md mx-auto">
-                You haven't published any plugins yet. Create your first plugin and share it with the community!
+                You haven't published any plugins yet. Create a tool in Uber CLI, export it with the <kbd className="px-2 py-1 bg-cyan-500/20 border border-cyan-500/30 rounded text-cyan-400 font-mono">E</kbd> key, and upload it!
               </p>
               
               <div className="bg-[#0d0d24]/60 backdrop-blur-xl border border-cyan-500/12 rounded-2xl p-8 mb-8">

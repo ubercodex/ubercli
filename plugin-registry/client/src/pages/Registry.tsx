@@ -88,9 +88,9 @@ export default function Registry() {
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-violet-500/10 rounded-3xl blur-2xl"></div>
                   <div className="relative text-8xl mb-6">🚀</div>
                 </div>
-                <h2 className="text-3xl font-black text-white mb-4">No Plugins Yet</h2>
+                <h2 className="text-3xl font-black text-white mb-4">No Approved Plugins Yet</h2>
                 <p className="text-slate-400 text-lg mb-8 max-w-md mx-auto">
-                  The registry is empty. Be the first to share your amazing tools with the community!
+                  The registry is waiting for its first approved plugin. Create a tool in Uber CLI and publish it here!
                 </p>
                 
                 <div className="bg-[#0d0d24]/60 backdrop-blur-xl border border-cyan-500/12 rounded-2xl p-8 mb-8">

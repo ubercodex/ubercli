@@ -61,8 +61,8 @@ export default function Publish() {
       return false;
     }
 
-    if (!/^[a-z0-9-]+$/i.test(data.name)) {
-      setValidationError('Plugin name can only contain letters, numbers, and hyphens');
+    if (!/^[a-z0-9-]+$/.test(data.name)) {
+      setValidationError('Plugin name must be lowercase letters, numbers, and hyphens only (e.g., "example-plugin" not "examplePlugin")');
       return false;
     }
 

@@ -26,14 +26,22 @@ export default function ToolList({ store, onSave, onEdit, onNew, onBack }: ToolL
 			return;
 		}
 
+		// Convert name to registry-compatible format (lowercase with hyphens)
+		const registryName = tool.name
+			.replace(/([a-z])([A-Z])/g, '$1-$2') // camelCase to kebab-case
+			.replace(/[^a-z0-9-]/gi, '-') // replace invalid chars with hyphens
+			.replace(/-+/g, '-') // collapse multiple hyphens
+			.replace(/^-|-$/g, '') // remove leading/trailing hyphens
+			.toLowerCase();
+
 		const exportData = {
-			name: tool.name,
+			name: registryName,
 			description: tool.description,
 			params: tool.params,
 			code: tool.code,
 		};
 
-		const filename = `${tool.name}.json`;
+		const filename = `${registryName}.json`;
 		const filepath = join(process.cwd(), filename);
 		
 		try {

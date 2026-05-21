@@ -157,7 +157,20 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 		} catch (error: any) {
 			console.error('Error creating plugin:', error);
 			if (error.name === 'ZodError') {
-				return reply.code(400).send({ error: 'Validation error', details: error.errors });
+				const firstError = error.errors[0];
+				let message = 'Validation error';
+				
+				if (firstError.path[0] === 'name' && firstError.code === 'invalid_string') {
+					message = 'Plugin name must be lowercase letters, numbers, and hyphens only (e.g., "example-plugin" not "examplePlugin")';
+				} else if (firstError.path[0] === 'description') {
+					message = 'Description is required and must be between 1-500 characters';
+				} else if (firstError.path[0] === 'code') {
+					message = 'Plugin code is required';
+				} else if (firstError.path[0] === 'parameters') {
+					message = 'Invalid parameters format';
+				}
+				
+				return reply.code(400).send({ error: message, details: error.errors });
 			}
 			return reply.code(500).send({ error: error.message || 'Internal server error' });
 		}
