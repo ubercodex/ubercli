@@ -151,7 +151,7 @@ export default function Publish() {
         throw new Error(data.error || 'Failed to publish plugin');
       }
 
-      const data = await response.json();
+      await response.json();
       alert('✅ Plugin submitted for review! An admin will approve it soon.');
       navigate('/my-plugins');
     } catch (err) {
