@@ -8,13 +8,9 @@ const require = createRequire(import.meta.url);
 const { version } = require('../package.json') as { version: string };
 
 const LOGO = [
-	'█  █ █▀▄ █▀▀ █▀█  █▀▀ █   █',
-	'█  █ █▀▄ █▀▀ █▀▄  █   █   █',
-	'█▄▄█ █▄▀ █▄▄ █ █  █▄▄ █▄▄ █',
-];
-
-const buildWave = (primary: string, secondary: string, accent: string, muted: string): string[] => [
-	muted, muted, primary, primary, secondary, secondary, accent, secondary, secondary, primary, primary, muted,
+	'▄▀▀▄ █▀▀▄ █   █ ▄▀▀▄',
+	'█  █ █▄▄▀ ▀▄ ▄▀ █  █',
+	' ▀▀  ▀  ▀   ▀    ▀▀ ',
 ];
 
 interface SplashProps {
@@ -24,20 +20,33 @@ interface SplashProps {
 
 export default function Splash({ workspace = DEFAULT_WORKSPACE, animated = true }: SplashProps): React.JSX.Element {
 	const theme = useTheme();
-	const waveColors = buildWave(theme.primary, theme.secondary, theme.accent, theme.border);
-	const [frame, setFrame] = useState(0);
+	const colors = [theme.primary, theme.secondary, theme.accent, theme.border, theme.muted];
+	
+	// Track brightness state for each character position
+	const totalChars = LOGO.reduce((sum, line) => sum + line.length, 0);
+	const [pixelStates, setPixelStates] = useState<number[]>(() => 
+		Array(totalChars).fill(0).map(() => Math.random())
+	);
 
 	useEffect(() => {
 		if (!animated) return;
 		const id = setInterval(() => {
-			setFrame(f => (f + 1) % waveColors.length);
-		}, 220);
+			setPixelStates(prev => 
+				prev.map(() => Math.random())
+			);
+		}, 150);
 		return () => clearInterval(id);
-	}, [animated, waveColors.length]);
+	}, [animated]);
 
-	const getColColor = (col: number): string => {
-		const idx = (col + frame) % waveColors.length;
-		return waveColors[(idx + waveColors.length) % waveColors.length];
+	const getCharColor = (row: number, col: number): string => {
+		const charIndex = LOGO.slice(0, row).reduce((sum, line) => sum + line.length, 0) + col;
+		const brightness = pixelStates[charIndex] || 0;
+		
+		if (brightness > 0.7) return theme.primary;
+		if (brightness > 0.5) return theme.secondary;
+		if (brightness > 0.3) return theme.accent;
+		if (brightness > 0.15) return theme.border;
+		return theme.muted;
 	};
 
 	return (
@@ -53,7 +62,7 @@ export default function Splash({ workspace = DEFAULT_WORKSPACE, animated = true 
 				{LOGO.map((line, row) => (
 					<Box key={row} flexDirection="row">
 						{line.split('').map((char, col) => (
-							<Text key={col} bold color={char !== ' ' ? getColColor(col) : undefined}>
+							<Text key={col} bold color={char !== ' ' ? getCharColor(row, col) : undefined}>
 								{char}
 							</Text>
 						))}

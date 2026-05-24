@@ -1,6 +1,6 @@
 {
   "name": "orvo",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "Orvo CLI - powered by Ink",
   "type": "module",
   "bin": {
