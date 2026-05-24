@@ -34,7 +34,7 @@ export default function Layout({ children }: LayoutProps) {
               <span className="text-white font-bold text-sm font-mono">O</span>
             </div>
             <div>
-              <div className="font-bold text-white tracking-tight">Orvo</div>
+              <div className="font-bold text-white tracking-tight">Orvo CLI</div>
               <div className="text-xs text-slate-500">Plugin Registry</div>
             </div>
           </Link>
@@ -139,7 +139,7 @@ export default function Layout({ children }: LayoutProps) {
                   <span className="text-white font-bold text-sm font-mono">O</span>
                 </div>
                 <div>
-                  <div className="font-bold text-white">Orvo</div>
+                  <div className="font-bold text-white">Orvo CLI</div>
                   <div className="text-xs text-slate-500">Plugin Registry</div>
                 </div>
               </div>
@@ -175,10 +175,10 @@ export default function Layout({ children }: LayoutProps) {
           {/* Bottom Bar */}
           <div className="pt-8 border-t border-cyan-500/8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
             <div className="flex flex-col gap-2 text-slate-500">
-              <div>© 2026 Orvo. Released under the MIT License.</div>
+              <div>© 2026 Orvo CLI. Released under the MIT License.</div>
             </div>
             <div className="flex items-center gap-4 text-slate-500">
-              <span>Built with ❤️ by the community</span>
+              <span>Built with ❤️ by developers, for developers</span>
             </div>
           </div>
         </div>
