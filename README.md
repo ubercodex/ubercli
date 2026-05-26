@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="ZAL.jpg" alt="ZAL" width="400"/>
+  <img src="https://github.com/ubercodex/zalcli/blob/main/plugin-registry/client/images/ZAL.jpg" alt="ZAL"/>
 </div>
 
 An AI-powered terminal assistant built with [Ink](https://github.com/vadimdemedes/ink) and TypeScript. Chat with multiple LLM providers, extend the AI with custom tools, and manage tool profiles — all from your terminal.
