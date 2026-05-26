@@ -97,6 +97,13 @@ export default function Layout({ children }: LayoutProps) {
                     >
                       🔧 My Plugins
                     </Link>
+                    <Link
+                      to="/my-profiles"
+                      onClick={() => setShowUserMenu(false)}
+                      className="block px-4 py-3 text-sm text-slate-200 hover:bg-cyan-500/10 transition"
+                    >
+                      📋 My Profiles
+                    </Link>
                     {user.isAdmin && (
                       <Link
                         to="/admin"

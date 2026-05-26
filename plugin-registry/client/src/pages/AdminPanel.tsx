@@ -24,6 +24,10 @@ interface Stats {
   rejectedPlugins: number;
   totalDownloads: number;
   totalUsers: number;
+  totalProfiles?: number;
+  pendingProfiles?: number;
+  approvedProfiles?: number;
+  profileDownloads?: number;
 }
 
 type Tab = 'pending' | 'approved' | 'rejected' | 'all' | 'stats';
@@ -56,14 +60,28 @@ export default function AdminPanel() {
       const timeoutId = setTimeout(() => controller.abort(), 30000);
       
       if (activeTab === 'stats') {
-        const response = await fetch(`${apiUrl}/admin/stats`, {
-          headers: { 'Authorization': `Bearer ${token}` },
-          signal: controller.signal,
-        });
+        const [pluginStatsRes, profileStatsRes] = await Promise.all([
+          fetch(`${apiUrl}/admin/stats`, {
+            headers: { 'Authorization': `Bearer ${token}` },
+            signal: controller.signal,
+          }),
+          fetch(`${apiUrl}/admin/profile-stats`, {
+            headers: { 'Authorization': `Bearer ${token}` },
+            signal: controller.signal,
+          }),
+        ]);
         clearTimeout(timeoutId);
-        if (response.ok) {
-          const data = await response.json();
-          setStats(data);
+        
+        if (pluginStatsRes.ok && profileStatsRes.ok) {
+          const pluginData = await pluginStatsRes.json();
+          const profileData = await profileStatsRes.json();
+          setStats({
+            ...pluginData,
+            totalProfiles: profileData.total || 0,
+            pendingProfiles: profileData.pending || 0,
+            approvedProfiles: profileData.approved || 0,
+            profileDownloads: profileData.total_downloads || 0,
+          });
         }
       } else {
         const endpoint = activeTab === 'all' 
@@ -198,36 +216,73 @@ export default function AdminPanel() {
           </div>
         ) : activeTab === 'stats' ? (
           /* Statistics View */
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-[#0d0d24]/60 border border-cyan-500/12 rounded-xl p-6">
-              <div className="text-4xl mb-2">📦</div>
-              <div className="text-3xl font-bold text-white mb-1">{stats?.totalPlugins || 0}</div>
-              <div className="text-slate-400">Total Plugins</div>
+          <div className="space-y-8">
+            {/* Overview Cards */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/20 rounded-xl p-6">
+                <div className="text-3xl mb-2">📦</div>
+                <div className="text-4xl font-bold text-white mb-1">{stats?.totalPlugins || 0}</div>
+                <div className="text-cyan-400 font-semibold">Total Plugins</div>
+              </div>
+              <div className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20 rounded-xl p-6">
+                <div className="text-3xl mb-2">📋</div>
+                <div className="text-4xl font-bold text-white mb-1">{stats?.totalProfiles || 0}</div>
+                <div className="text-purple-400 font-semibold">Total Profiles</div>
+              </div>
+              <div className="bg-gradient-to-br from-violet-500/10 to-violet-500/5 border border-violet-500/20 rounded-xl p-6">
+                <div className="text-3xl mb-2">👤</div>
+                <div className="text-4xl font-bold text-white mb-1">{stats?.totalUsers || 0}</div>
+                <div className="text-violet-400 font-semibold">Total Users</div>
+              </div>
+              <div className="bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 rounded-xl p-6">
+                <div className="text-3xl mb-2">⬇️</div>
+                <div className="text-4xl font-bold text-white mb-1">{(stats?.totalDownloads || 0) + (stats?.profileDownloads || 0)}</div>
+                <div className="text-green-400 font-semibold">Total Downloads</div>
+              </div>
             </div>
-            <div className="bg-[#0d0d24]/60 border border-yellow-500/12 rounded-xl p-6">
-              <div className="text-4xl mb-2">⏳</div>
-              <div className="text-3xl font-bold text-yellow-400 mb-1">{stats?.pendingPlugins || 0}</div>
-              <div className="text-slate-400">Pending Review</div>
+
+            {/* Plugin Stats */}
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-4">🔌 Plugin Statistics</h2>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="bg-[#0d0d24]/60 border border-yellow-500/20 rounded-xl p-6">
+                  <div className="text-2xl mb-2">⏳</div>
+                  <div className="text-3xl font-bold text-yellow-400 mb-1">{stats?.pendingPlugins || 0}</div>
+                  <div className="text-slate-400">Pending Review</div>
+                </div>
+                <div className="bg-[#0d0d24]/60 border border-green-500/20 rounded-xl p-6">
+                  <div className="text-2xl mb-2">✅</div>
+                  <div className="text-3xl font-bold text-green-400 mb-1">{stats?.approvedPlugins || 0}</div>
+                  <div className="text-slate-400">Approved</div>
+                </div>
+                <div className="bg-[#0d0d24]/60 border border-red-500/20 rounded-xl p-6">
+                  <div className="text-2xl mb-2">❌</div>
+                  <div className="text-3xl font-bold text-red-400 mb-1">{stats?.rejectedPlugins || 0}</div>
+                  <div className="text-slate-400">Rejected</div>
+                </div>
+              </div>
             </div>
-            <div className="bg-[#0d0d24]/60 border border-green-500/12 rounded-xl p-6">
-              <div className="text-4xl mb-2">✅</div>
-              <div className="text-3xl font-bold text-green-400 mb-1">{stats?.approvedPlugins || 0}</div>
-              <div className="text-slate-400">Approved</div>
-            </div>
-            <div className="bg-[#0d0d24]/60 border border-red-500/12 rounded-xl p-6">
-              <div className="text-4xl mb-2">❌</div>
-              <div className="text-3xl font-bold text-red-400 mb-1">{stats?.rejectedPlugins || 0}</div>
-              <div className="text-slate-400">Rejected</div>
-            </div>
-            <div className="bg-[#0d0d24]/60 border border-cyan-500/12 rounded-xl p-6">
-              <div className="text-4xl mb-2">👁️</div>
-              <div className="text-3xl font-bold text-cyan-400 mb-1">{stats?.totalDownloads || 0}</div>
-              <div className="text-slate-400">Total Views</div>
-            </div>
-            <div className="bg-[#0d0d24]/60 border border-violet-500/12 rounded-xl p-6">
-              <div className="text-4xl mb-2">👤</div>
-              <div className="text-3xl font-bold text-violet-400 mb-1">{stats?.totalUsers || 0}</div>
-              <div className="text-slate-400">Total Users</div>
+
+            {/* Profile Stats */}
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-4">📋 Profile Statistics</h2>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="bg-[#0d0d24]/60 border border-yellow-500/20 rounded-xl p-6">
+                  <div className="text-2xl mb-2">⏳</div>
+                  <div className="text-3xl font-bold text-yellow-400 mb-1">{stats?.pendingProfiles || 0}</div>
+                  <div className="text-slate-400">Pending Review</div>
+                </div>
+                <div className="bg-[#0d0d24]/60 border border-green-500/20 rounded-xl p-6">
+                  <div className="text-2xl mb-2">✅</div>
+                  <div className="text-3xl font-bold text-green-400 mb-1">{stats?.approvedProfiles || 0}</div>
+                  <div className="text-slate-400">Approved</div>
+                </div>
+                <div className="bg-[#0d0d24]/60 border border-cyan-500/20 rounded-xl p-6">
+                  <div className="text-2xl mb-2">⬇️</div>
+                  <div className="text-3xl font-bold text-cyan-400 mb-1">{stats?.profileDownloads || 0}</div>
+                  <div className="text-slate-400">Profile Downloads</div>
+                </div>
+              </div>
             </div>
           </div>
         ) : (

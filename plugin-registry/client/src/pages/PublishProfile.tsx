@@ -72,7 +72,7 @@ export default function PublishProfile() {
         throw new Error(data.error || 'Failed to create profile');
       }
 
-      navigate('/my-plugins');
+      navigate('/my-profiles');
     } catch (err: any) {
       setError(err.message || 'Failed to create profile');
     } finally {
