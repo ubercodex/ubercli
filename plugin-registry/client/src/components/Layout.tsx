@@ -47,7 +47,13 @@ export default function Layout({ children }: LayoutProps) {
               to="/registry" 
               className={`text-sm transition-colors ${isActive('/registry') ? 'text-cyan-400 font-semibold' : 'text-slate-400 hover:text-cyan-400'}`}
             >
-              Registry
+              Plugins
+            </Link>
+            <Link 
+              to="/profiles" 
+              className={`text-sm transition-colors ${isActive('/profiles') ? 'text-cyan-400 font-semibold' : 'text-slate-400 hover:text-cyan-400'}`}
+            >
+              Profiles
             </Link>
             <Link 
               to="/contact" 
@@ -75,14 +81,21 @@ export default function Layout({ children }: LayoutProps) {
                       onClick={() => setShowUserMenu(false)}
                       className="block px-4 py-3 text-sm text-slate-200 hover:bg-cyan-500/10 transition"
                     >
-                      Publish Plugin
+                      📦 Publish Plugin
+                    </Link>
+                    <Link
+                      to="/publish-profile"
+                      onClick={() => setShowUserMenu(false)}
+                      className="block px-4 py-3 text-sm text-slate-200 hover:bg-cyan-500/10 transition"
+                    >
+                      📋 Create Profile
                     </Link>
                     <Link
                       to="/my-plugins"
                       onClick={() => setShowUserMenu(false)}
                       className="block px-4 py-3 text-sm text-slate-200 hover:bg-cyan-500/10 transition"
                     >
-                      My Plugins
+                      🔧 My Plugins
                     </Link>
                     {user.isAdmin && (
                       <Link
@@ -141,8 +154,8 @@ export default function Layout({ children }: LayoutProps) {
                 </div>
               </div>
               <p className="text-slate-400 text-sm max-w-md">
-                An AI-powered terminal assistant with multi-provider support, custom tool creation, 
-                and a community-driven plugin ecosystem.
+                Inspired by Zal, the legendary Persian hero. A terminal assistant that connects humans with AI, 
+                ideas with execution, and developers with each other. Wisdom over force.
               </p>
             </div>
 
@@ -151,7 +164,8 @@ export default function Layout({ children }: LayoutProps) {
               <h3 className="text-white font-semibold mb-3 text-sm">Quick Links</h3>
               <ul className="space-y-2 text-sm">
                 <li><Link to="/" className="text-slate-400 hover:text-cyan-400 transition-colors">Home</Link></li>
-                <li><Link to="/registry" className="text-slate-400 hover:text-cyan-400 transition-colors">Browse Registry</Link></li>
+                <li><Link to="/registry" className="text-slate-400 hover:text-cyan-400 transition-colors">Browse Plugins</Link></li>
+                <li><Link to="/profiles" className="text-slate-400 hover:text-cyan-400 transition-colors">Browse Profiles</Link></li>
                 <li><Link to="/contact" className="text-slate-400 hover:text-cyan-400 transition-colors">Contact</Link></li>
                 <li><a href="https://github.com/ubercodex/zalcli#readme" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-cyan-400 transition-colors">Documentation</a></li>
               </ul>

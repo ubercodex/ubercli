@@ -9,6 +9,9 @@ import MyPlugins from './pages/MyPlugins';
 import AuthCallback from './pages/AuthCallback';
 import AdminPanel from './pages/AdminPanel';
 import PluginDetail from './pages/PluginDetail';
+import Profiles from './pages/Profiles';
+import ProfileDetail from './pages/ProfileDetail';
+import PublishProfile from './pages/PublishProfile';
 
 export default function App() {
   return (
@@ -23,6 +26,9 @@ export default function App() {
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/plugins/:author/:name" element={<PluginDetail />} />
+          <Route path="/profiles" element={<Profiles />} />
+          <Route path="/profiles/:author/:name" element={<ProfileDetail />} />
+          <Route path="/publish-profile" element={<PublishProfile />} />
         </Routes>
       </Layout>
     </AuthProvider>

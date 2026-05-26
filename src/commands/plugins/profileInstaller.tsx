@@ -46,10 +46,17 @@ export default function ProfileInstaller({
 					if (response.status === 404) {
 						throw new Error(`Profile "${profileName}" not found in registry`);
 					}
-					throw new Error(`Failed to fetch profile: ${response.statusText}`);
+					const text = await response.text();
+					throw new Error(`Failed to fetch profile: ${response.status} ${response.statusText}\n${text.substring(0, 200)}`);
 				}
 				
-				const profile = await response.json();
+				let profile;
+				try {
+					profile = await response.json();
+				} catch (err) {
+					const text = await response.text();
+					throw new Error(`Invalid JSON response from server. Got HTML instead. Server may not be running or profile routes not registered.\n${text.substring(0, 200)}`)
+				}
 				
 				// Check if profile already exists
 				const existing = store.profiles.find(p => p.name === profile.name);

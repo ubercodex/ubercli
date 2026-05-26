@@ -24,7 +24,7 @@ export default function NewHome() {
             {/* Left: Text */}
             <div className="animate-fade-up">
               <div className="inline-block px-4 py-2 mb-6 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-full text-xs font-semibold uppercase tracking-wider">
-                AI-Powered Terminal
+                Wisdom Over Force
               </div>
 
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-none tracking-tight mb-6">
@@ -33,8 +33,8 @@ export default function NewHome() {
               </h1>
 
               <p className="text-slate-400 text-lg leading-relaxed mb-8 max-w-lg">
-                An AI-powered terminal assistant built with Ink and TypeScript. Chat with multiple LLM providers, 
-                create custom tools with AI, and manage tool profiles — all from your terminal.
+                Inspired by Zal, the legendary Persian hero raised by the mythical Simurgh. 
+                A terminal assistant that connects humans with AI, ideas with execution, and plugins with real productivity.
               </p>
 
               <div className="flex flex-wrap gap-4">
@@ -96,7 +96,7 @@ export default function NewHome() {
             <div className="inline-block px-4 py-2 mb-4 bg-cyan-500/8 text-cyan-400 border border-cyan-500/20 rounded-full text-xs font-semibold uppercase tracking-wider">
               Features
             </div>
-            <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">Everything you need</h2>
+            <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">Built for builders</h2>
             <p className="text-slate-400 text-lg max-w-2xl mx-auto">
               Powerful features designed to enhance your terminal workflow
             </p>
@@ -104,12 +104,12 @@ export default function NewHome() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
-              { icon: '🤖', title: 'Multi-Provider AI', desc: 'Switch between multiple AI providers and models. Configure your preferred provider and start chatting.' },
-              { icon: '🔌', title: 'Plugin System', desc: 'Create custom tools by describing what you want. AI generates the code for you.' },
-              { icon: '📦', title: 'Tool Profiles', desc: 'Group tools into named profiles. Activate a profile to restrict AI to only those tools.' },
-              { icon: '💾', title: 'Workspace Memory', desc: 'Two-layer memory system: shared baseline + per-branch overlay for git repos.' },
-              { icon: '🎨', title: 'Multiple Themes', desc: 'Choose from multiple color themes to customize your terminal experience.' },
-              { icon: '🔐', title: 'Encrypted Keys', desc: 'API keys stored with strong encryption, derived from your machine identity.' },
+              { icon: '🌉', title: 'Connect Many Worlds', desc: 'Switch between Anthropic, Google, and OpenAI. One workflow, multiple providers.' },
+              { icon: '⚡', title: 'Innovation Through AI', desc: 'Describe what you need. AI generates custom terminal tools instantly.' },
+              { icon: '�', title: 'Strategic Profiles', desc: 'Curate plugin collections for specific use cases. Share with the community.' },
+              { icon: '🧠', title: 'Wisdom & Memory', desc: 'Context-aware workspace memory. Remembers what matters across sessions.' },
+              { icon: '🎨', title: 'Built Different', desc: 'Customizable themes and encrypted API keys. Security meets style.' },
+              { icon: '🌐', title: 'Community Ecosystem', desc: 'Browse, install, and publish plugins. Build bridges between developers.' },
             ].map((feature, i) => (
               <div key={i} className="reveal opacity-0 translate-y-5 transition-all duration-600 bg-[#0d0d24]/60 backdrop-blur-xl border border-cyan-500/12 rounded-2xl p-6 hover:border-cyan-500/30 hover:shadow-lg hover:shadow-cyan-500/10 transition-all group">
                 <div className="text-3xl mb-4">{feature.icon}</div>
@@ -125,9 +125,9 @@ export default function NewHome() {
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center reveal opacity-0 translate-y-5 transition-all duration-600">
           <div className="bg-gradient-to-br from-cyan-500/10 to-violet-500/10 border border-cyan-500/20 rounded-3xl p-12">
-            <h2 className="text-4xl font-black text-white mb-4">Ready to get started?</h2>
+            <h2 className="text-4xl font-black text-white mb-4">Think. Create. Automate.</h2>
             <p className="text-slate-400 text-lg mb-8">
-              Install ZAL and start building with AI-powered tools
+              Join developers who choose wisdom over force. Start building with ZAL today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a

@@ -285,18 +285,8 @@ export async function profileRoutes(fastify: FastifyInstance) {
 		return { message: 'Profile deleted' };
 	});
 
-	// Admin: Get stats
-	fastify.get('/admin/stats', { onRequest: [fastify.authenticate, requireAdmin] }, async (request, reply) => {
-		const pluginStats = db.prepare(`
-			SELECT 
-				COUNT(*) as total,
-				SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
-				SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved,
-				SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected,
-				SUM(downloads) as total_downloads
-			FROM plugins
-		`).get() as any;
-
+	// Admin: Get profile stats only
+	fastify.get('/admin/profile-stats', { onRequest: [fastify.authenticate, requireAdmin] }, async (request, reply) => {
 		const profileStats = db.prepare(`
 			SELECT 
 				COUNT(*) as total,
@@ -307,12 +297,6 @@ export async function profileRoutes(fastify: FastifyInstance) {
 			FROM profiles
 		`).get() as any;
 
-		const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get() as any;
-
-		return {
-			plugins: pluginStats,
-			profiles: profileStats,
-			totalUsers: userCount.count,
-		};
+		return profileStats;
 	});
 }
