@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface Plugin {
   id: string;
@@ -320,9 +322,21 @@ export default function AdminPanel() {
                       </div>
                       <div>
                         <label className="text-slate-500 text-sm">Code</label>
-                        <pre className="mt-2 p-4 bg-[#050510] border border-cyan-500/20 rounded-lg text-white text-xs overflow-x-auto max-h-64">
-                          {selectedPlugin.code}
-                        </pre>
+                        <div className="mt-2 rounded-lg overflow-hidden border border-cyan-500/20 max-h-96 overflow-y-auto">
+                          <SyntaxHighlighter
+                            language="javascript"
+                            style={vscDarkPlus}
+                            customStyle={{
+                              margin: 0,
+                              padding: '1rem',
+                              fontSize: '0.75rem',
+                              background: '#050510',
+                            }}
+                            showLineNumbers
+                          >
+                            {selectedPlugin.code}
+                          </SyntaxHighlighter>
+                        </div>
                       </div>
                     </div>
 

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface Plugin {
   id: string;
@@ -142,9 +144,21 @@ export default function PluginDetail() {
 
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-8">
           <h2 className="text-2xl font-bold text-white mb-4">Source Code</h2>
-          <pre className="bg-gray-950 rounded-lg p-4 overflow-x-auto">
-            <code className="text-sm text-gray-300">{plugin.code}</code>
-          </pre>
+          <div className="rounded-lg overflow-hidden">
+            <SyntaxHighlighter
+              language="javascript"
+              style={vscDarkPlus}
+              customStyle={{
+                margin: 0,
+                padding: '1.5rem',
+                fontSize: '0.875rem',
+                background: '#0a0a0f',
+              }}
+              showLineNumbers
+            >
+              {plugin.code}
+            </SyntaxHighlighter>
+          </div>
         </div>
       </div>
     </div>
