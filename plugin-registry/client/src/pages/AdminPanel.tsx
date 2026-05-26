@@ -24,11 +24,7 @@ interface Stats {
   totalUsers: number;
 }
 
-interface AdminUser {
-  username: string;
-}
-
-type Tab = 'pending' | 'approved' | 'rejected' | 'all' | 'stats' | 'admins';
+type Tab = 'pending' | 'approved' | 'rejected' | 'all' | 'stats';
 
 export default function AdminPanel() {
   const { user, token } = useAuth();
@@ -36,7 +32,6 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState<Tab>('pending');
   const [plugins, setPlugins] = useState<Plugin[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
-  const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPlugin, setSelectedPlugin] = useState<Plugin | null>(null);
 
@@ -54,21 +49,19 @@ export default function AdminPanel() {
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
       
+      // Create abort controller with 30 second timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      
       if (activeTab === 'stats') {
         const response = await fetch(`${apiUrl}/admin/stats`, {
           headers: { 'Authorization': `Bearer ${token}` },
+          signal: controller.signal,
         });
+        clearTimeout(timeoutId);
         if (response.ok) {
           const data = await response.json();
           setStats(data);
-        }
-      } else if (activeTab === 'admins') {
-        const response = await fetch(`${apiUrl}/admin/admins`, {
-          headers: { 'Authorization': `Bearer ${token}` },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setAdmins(data.admins || []);
         }
       } else {
         const endpoint = activeTab === 'all' 
@@ -77,7 +70,9 @@ export default function AdminPanel() {
         
         const response = await fetch(endpoint, {
           headers: { 'Authorization': `Bearer ${token}` },
+          signal: controller.signal,
         });
+        clearTimeout(timeoutId);
 
         if (response.ok) {
           const data = await response.json();
@@ -85,7 +80,12 @@ export default function AdminPanel() {
         }
       }
     } catch (err) {
-      console.error(err);
+      if (err instanceof Error && err.name === 'AbortError') {
+        console.error('Request timeout - server took too long to respond');
+        alert('⚠️ Request timeout. The server is taking too long to respond. Please try again.');
+      } else {
+        console.error(err);
+      }
     } finally {
       setLoading(false);
     }
@@ -154,7 +154,6 @@ export default function AdminPanel() {
     { id: 'rejected', label: 'Rejected', icon: '❌' },
     { id: 'all', label: 'All Plugins', icon: '📦' },
     { id: 'stats', label: 'Statistics', icon: '📊' },
-    { id: 'admins', label: 'Admins', icon: '👥' },
   ];
 
   return (
@@ -228,29 +227,6 @@ export default function AdminPanel() {
               <div className="text-3xl font-bold text-violet-400 mb-1">{stats?.totalUsers || 0}</div>
               <div className="text-slate-400">Total Users</div>
             </div>
-          </div>
-        ) : activeTab === 'admins' ? (
-          /* Admins View */
-          <div className="bg-[#0d0d24]/60 border border-cyan-500/12 rounded-xl p-6">
-            <h2 className="text-2xl font-bold text-white mb-4">👥 Admin Users</h2>
-            <p className="text-slate-400 mb-6">Configured in ADMIN_GITHUB_USERNAMES environment variable</p>
-            {admins.length === 0 ? (
-              <div className="text-center py-12 text-slate-500">No admins configured</div>
-            ) : (
-              <div className="space-y-3">
-                {admins.map((admin, i) => (
-                  <div key={i} className="flex items-center gap-3 p-4 bg-white/5 rounded-lg border border-white/10">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center text-white font-bold">
-                      {admin.username[0].toUpperCase()}
-                    </div>
-                    <div>
-                      <div className="text-white font-semibold">{admin.username}</div>
-                      <div className="text-sm text-slate-500">GitHub: @{admin.username}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         ) : (
           /* Plugins View */
