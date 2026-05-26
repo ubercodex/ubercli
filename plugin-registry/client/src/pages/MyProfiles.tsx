@@ -18,6 +18,7 @@ export default function MyProfiles() {
   const { user, token } = useAuth();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user || !token) {
@@ -49,6 +50,35 @@ export default function MyProfiles() {
       </div>
     );
   }
+
+  const handleDelete = async (profileId: string, profileName: string) => {
+    if (!confirm(`Are you sure you want to delete "${profileName}"? This cannot be undone.`)) {
+      return;
+    }
+
+    setDeleting(profileId);
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/profiles/${profileId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        setProfiles(prev => prev.filter(p => p.id !== profileId));
+      } else {
+        alert('Failed to delete profile');
+      }
+    } catch (error) {
+      alert('Failed to delete profile');
+    } finally {
+      setDeleting(null);
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     const styles = {
@@ -128,23 +158,33 @@ export default function MyProfiles() {
                   <span>⬇️ {profile.downloads} downloads</span>
                 </div>
 
-                {profile.status === 'approved' && (
-                  <Link
-                    to={`/profiles/${profile.author}/${profile.name}`}
-                    className="mt-4 block text-center px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg hover:bg-purple-500/30 transition text-sm font-semibold"
+                <div className="mt-4 flex gap-2">
+                  {profile.status === 'approved' && (
+                    <Link
+                      to={`/profiles/${profile.author}/${profile.name}`}
+                      className="flex-1 text-center px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg hover:bg-purple-500/30 transition text-sm font-semibold"
+                    >
+                      View Profile
+                    </Link>
+                  )}
+                  
+                  <button
+                    onClick={() => handleDelete(profile.id, profile.name)}
+                    disabled={deleting === profile.id}
+                    className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    View Profile
-                  </Link>
-                )}
+                    {deleting === profile.id ? '...' : '🗑️'}
+                  </button>
+                </div>
 
                 {profile.status === 'pending' && (
-                  <div className="mt-4 text-center text-xs text-yellow-400">
+                  <div className="mt-2 text-center text-xs text-yellow-400">
                     ⏳ Awaiting admin approval
                   </div>
                 )}
 
                 {profile.status === 'rejected' && (
-                  <div className="mt-4 text-center text-xs text-red-400">
+                  <div className="mt-2 text-center text-xs text-red-400">
                     ❌ Rejected - Please contact support
                   </div>
                 )}

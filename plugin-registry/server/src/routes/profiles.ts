@@ -81,10 +81,10 @@ export async function profileRoutes(fastify: FastifyInstance) {
 
 		const profileId = randomBytes(16).toString('hex');
 
-		// Create profile
+		// Create profile (auto-approved since all plugins are approved)
 		db.prepare(`
 			INSERT INTO profiles (id, author, name, description, tags, author_id, status)
-			VALUES (?, ?, ?, ?, ?, ?, 'pending')
+			VALUES (?, ?, ?, ?, ?, ?, 'approved')
 		`).run(
 			profileId,
 			username,
@@ -104,12 +104,12 @@ export async function profileRoutes(fastify: FastifyInstance) {
 			insertPlugin.run(profileId, pluginId);
 		}
 
-		console.log(`✅ Profile created: ${username}/${data.name} (${data.pluginIds.length} plugins)`);
+		console.log(`✅ Profile created and auto-approved: ${username}/${data.name} (${data.pluginIds.length} plugins)`);
 
 		return { 
 			id: profileId,
-			message: 'Profile submitted for review',
-			status: 'pending'
+			message: 'Profile created successfully!',
+			status: 'approved'
 		};
 	});
 
