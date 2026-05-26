@@ -68,6 +68,71 @@ Set your API key and preferred model for each provider (Anthropic, Google, OpenA
 - Press `A` on a profile to **activate** it — the AI will only call tools in that profile
 - The active profile name is shown in the splash screen on every launch
 
+## Plugin Registry
+
+Visit **[zalcli.com](https://zalcli.com)** to browse, share, and install community-built plugins.
+
+### 📤 Publishing Your Plugin
+
+Share your custom tools with the community:
+
+1. **Create a tool** in ZAL CLI using `/plugins` → `+ New tool`
+2. **Export it** — in the plugin manager, select your tool and press `E` to export
+   - This saves the plugin JSON to your clipboard or a file
+   - Alternatively, find it in `.zal/plugins.json` in your workspace
+3. **Publish** — go to [zalcli.com/publish](https://zalcli.com/publish)
+   - Sign in with GitHub
+   - Upload your plugin JSON
+   - Wait for admin approval (plugins are reviewed for safety)
+
+**Quick Export Tip:** Press `E` on any tool in the plugin manager to instantly export it!
+
+### 📥 Installing Plugins from the Registry
+
+Browse plugins at [zalcli.com/registry](https://zalcli.com/registry) and install them:
+
+**Method 1: Direct Install (Coming Soon)**
+```bash
+zal /plugins install author-pluginname
+```
+
+**Method 2: Manual Install**
+1. Find a plugin on [zalcli.com/registry](https://zalcli.com/registry)
+2. Copy the plugin JSON from the detail page
+3. Open `.zal/plugins.json` in your workspace
+4. Add the plugin object to the `tools` array
+5. Restart ZAL or reload plugins
+
+**Example plugin structure:**
+```json
+{
+  "id": "custom_1234567890",
+  "name": "calculateInterest",
+  "description": "Calculate compound interest",
+  "kind": "custom",
+  "enabled": true,
+  "params": [
+    { "name": "principal", "type": "number", "description": "Initial amount", "required": true },
+    { "name": "rate", "type": "number", "description": "Interest rate (decimal)", "required": true }
+  ],
+  "code": "const amount = principal * Math.pow(1 + rate, years);\nreturn { finalAmount: amount, interest: amount - principal };"
+}
+```
+
+### 🔍 Finding Plugins
+
+- **Browse all** — [zalcli.com/registry](https://zalcli.com/registry)
+- **Search** — Use the search bar to filter by name, author, or description
+- **Categories** — Filter by use case (APIs, automation, utilities, etc.)
+
+### 🛡️ Safety & Review
+
+All plugins are reviewed by admins before appearing in the registry:
+- ✅ Code quality and safety checks
+- ✅ No malicious code or security risks
+- ✅ Proper documentation and examples
+- ✅ Functional testing
+
 ## Development
 
 ```bash
