@@ -152,12 +152,10 @@ export default function Layout({ children }: LayoutProps) {
             {/* Brand */}
             <div className="md:col-span-2">
               <div className="flex items-center gap-3 mb-4">
-                <img src="/images/ZAL.jpg" alt="ZAL" className="w-10 h-10 rounded-lg" />
-                <div>
-                  <div className="font-bold text-2xl bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    ZAL Plugin Registry
-                  </div>
+                <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  ZAL
                 </div>
+                <span className="text-slate-500">Plugin Registry</span>
               </div>
               <p className="text-slate-400 text-sm max-w-md">
                 Inspired by Zal, the legendary Persian hero. A terminal assistant that connects humans with AI, 
