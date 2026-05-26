@@ -18,6 +18,7 @@ export default function PublishProfile() {
   const [tags, setTags] = useState('');
   const [selectedPlugins, setSelectedPlugins] = useState<string[]>([]);
   const [availablePlugins, setAvailablePlugins] = useState<Plugin[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -86,6 +87,22 @@ export default function PublishProfile() {
         ? prev.filter(id => id !== pluginId)
         : [...prev, pluginId]
     );
+  };
+
+  const selectAllFiltered = () => {
+    const filteredIds = availablePlugins
+      .filter(plugin => 
+        searchQuery === '' ||
+        plugin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        plugin.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        plugin.description.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .map(p => p.id);
+    setSelectedPlugins(prev => [...new Set([...prev, ...filteredIds])]);
+  };
+
+  const clearAll = () => {
+    setSelectedPlugins([]);
   };
 
   if (!user || !token) {
@@ -162,9 +179,37 @@ export default function PublishProfile() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Select Plugins * ({selectedPlugins.length} selected)
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-gray-300">
+                Select Plugins * ({selectedPlugins.length} selected)
+              </label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={selectAllFiltered}
+                  className="text-xs px-3 py-1 bg-purple-500/20 text-purple-400 rounded hover:bg-purple-500/30 transition"
+                >
+                  Select All Shown
+                </button>
+                <button
+                  type="button"
+                  onClick={clearAll}
+                  className="text-xs px-3 py-1 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition"
+                >
+                  Clear All
+                </button>
+              </div>
+            </div>
+            
+            {/* Search Input */}
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search plugins by name, author, or description..."
+              className="w-full px-4 py-2 mb-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 text-sm"
+            />
+            
             <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 max-h-96 overflow-y-auto">
               {availablePlugins.length === 0 ? (
                 <p className="text-gray-500 text-center py-4">
@@ -172,7 +217,14 @@ export default function PublishProfile() {
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {availablePlugins.map(plugin => (
+                  {availablePlugins
+                    .filter(plugin => 
+                      searchQuery === '' ||
+                      plugin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      plugin.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      plugin.description.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                    .map(plugin => (
                     <label
                       key={plugin.id}
                       className="flex items-start gap-3 p-3 hover:bg-gray-800 rounded-lg cursor-pointer transition"

@@ -30,10 +30,10 @@ export default function Layout({ children }: LayoutProps) {
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#03030d]/85 backdrop-blur-xl border-b border-cyan-500/8">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            <div>
-              <div className="font-bold text-white tracking-tight">ZAL CLI</div>
-              <div className="text-xs text-slate-500">Plugin Registry</div>
+            <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              ZAL
             </div>
+            <span className="text-slate-500">Plugin Registry</span>
           </Link>
           
           <nav className="flex items-center gap-6">

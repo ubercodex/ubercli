@@ -56,17 +56,6 @@ export default function PluginDetail() {
 
   return (
     <div className="min-h-screen bg-gray-950">
-      <nav className="border-b border-gray-800 bg-gray-950/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              ZAL
-            </div>
-            <span className="text-gray-500">Plugin Registry</span>
-          </Link>
-        </div>
-      </nav>
-
       <div className="max-w-5xl mx-auto px-6 py-12">
         <button 
           onClick={() => navigate(-1)} 
