@@ -152,12 +152,11 @@ export default function Layout({ children }: LayoutProps) {
             {/* Brand */}
             <div className="md:col-span-2">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-cyan-500 to-violet-600">
-                  <span className="text-white font-bold text-sm font-mono">O</span>
-                </div>
+                <img src="/images/ZAL.jpg" alt="ZAL" className="w-10 h-10 rounded-lg" />
                 <div>
-                  <div className="font-bold text-white">ZAL CLI</div>
-                  <div className="text-xs text-slate-500">Plugin Registry</div>
+                  <div className="font-bold text-2xl bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    ZAL Plugin Registry
+                  </div>
                 </div>
               </div>
               <p className="text-slate-400 text-sm max-w-md">
