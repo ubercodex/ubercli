@@ -13,6 +13,7 @@ import Profiles from './pages/Profiles';
 import ProfileDetail from './pages/ProfileDetail';
 import PublishProfile from './pages/PublishProfile';
 import MyProfiles from './pages/MyProfiles';
+import EditProfile from './pages/EditProfile';
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/profiles/:author/:name" element={<ProfileDetail />} />
           <Route path="/publish-profile" element={<PublishProfile />} />
           <Route path="/my-profiles" element={<MyProfiles />} />
+          <Route path="/edit-profile/:profileId" element={<EditProfile />} />
         </Routes>
       </Layout>
     </AuthProvider>

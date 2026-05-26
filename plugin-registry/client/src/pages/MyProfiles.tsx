@@ -159,7 +159,7 @@ export default function MyProfiles() {
 
                 <div className="flex items-center justify-between text-sm text-gray-500 border-t border-gray-800 pt-4">
                   <span>🔌 {profile.plugin_count} plugins</span>
-                  <span>⬇️ {profile.downloads} downloads</span>
+                  <span>👁️ {profile.downloads} views</span>
                 </div>
 
                 <div className="mt-4 flex gap-2">
@@ -168,9 +168,16 @@ export default function MyProfiles() {
                       to={`/profiles/${profile.author}/${profile.name}`}
                       className="flex-1 text-center px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg hover:bg-purple-500/30 transition text-sm font-semibold"
                     >
-                      View Profile
+                      View
                     </Link>
                   )}
+                  
+                  <Link
+                    to={`/edit-profile/${profile.id}`}
+                    className="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition text-sm font-semibold"
+                  >
+                    ✏️
+                  </Link>
                   
                   <button
                     onClick={() => handleDelete(profile.id, profile.name)}

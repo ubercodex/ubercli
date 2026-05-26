@@ -5,7 +5,10 @@ import { randomBytes } from 'crypto';
 import { requireAdmin } from '../middleware/admin.js';
 
 const ProfileSchema = z.object({
-	name: z.string().min(1).max(100),
+	name: z.string()
+		.min(1)
+		.max(100)
+		.regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Profile name must be in kebab-case (lowercase letters, numbers, and hyphens only)'),
 	description: z.string().min(1).max(500),
 	tags: z.array(z.string()).max(10),
 	pluginIds: z.array(z.string()).min(1).max(50),
@@ -71,6 +74,10 @@ export async function profileRoutes(fastify: FastifyInstance) {
 
 		const data = ProfileSchema.parse(request.body);
 
+		// The name from frontend is already kebab-case due to validation
+		// This is what the CLI will use to look up the profile
+		const kebabName = data.name;
+
 		// Verify all plugins exist and are approved
 		const pluginChecks = data.pluginIds.map(id => {
 			const plugin = db.prepare('SELECT id, status FROM plugins WHERE id = ?').get(id) as any;
@@ -82,13 +89,14 @@ export async function profileRoutes(fastify: FastifyInstance) {
 		const profileId = randomBytes(16).toString('hex');
 
 		// Create profile (auto-approved since all plugins are approved)
+		// name field stores kebab-case for CLI lookup
 		db.prepare(`
 			INSERT INTO profiles (id, author, name, description, tags, author_id, status)
 			VALUES (?, ?, ?, ?, ?, ?, 'approved')
 		`).run(
 			profileId,
 			username,
-			data.name,
+			kebabName,
 			data.description,
 			JSON.stringify(data.tags),
 			userId

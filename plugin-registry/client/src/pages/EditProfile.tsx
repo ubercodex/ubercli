@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 interface Plugin {
@@ -10,8 +10,9 @@ interface Plugin {
   version: string;
 }
 
-export default function PublishProfile() {
+export default function EditProfile() {
   const navigate = useNavigate();
+  const { profileId } = useParams<{ profileId: string }>();
   const { user, token } = useAuth();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -19,41 +20,69 @@ export default function PublishProfile() {
   const [selectedPlugins, setSelectedPlugins] = useState<string[]>([]);
   const [availablePlugins, setAvailablePlugins] = useState<Plugin[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (!user || !token) {
+      navigate('/');
       return;
     }
 
-    // Fetch approved plugins
-    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/plugins?status=approved`)
-      .then(res => res.json())
-      .then(data => {
-        setAvailablePlugins(data.plugins || []);
+    // Fetch profile data and approved plugins
+    Promise.all([
+      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/profiles/my`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then(res => res.json()),
+      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/plugins?status=approved`)
+        .then(res => res.json()),
+    ])
+      .then(([profilesData, pluginsData]) => {
+        const profile = (profilesData.profiles || []).find((p: any) => p.id === profileId);
+        if (!profile) {
+          setError('Profile not found');
+          setLoading(false);
+          return;
+        }
+
+        setName(profile.name);
+        setDescription(profile.description);
+        setTags(typeof profile.tags === 'string' ? JSON.parse(profile.tags).join(', ') : profile.tags.join(', '));
+        
+        // Fetch profile plugins
+        fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/profiles/${profile.author}/${profile.name}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then(res => res.json())
+          .then(data => {
+            setSelectedPlugins(data.plugins.map((p: any) => p.id));
+            setAvailablePlugins(pluginsData.plugins || []);
+            setLoading(false);
+          });
       })
       .catch(() => {
-        setError('Failed to load plugins');
+        setError('Failed to load profile');
+        setLoading(false);
       });
-  }, [user, token]);
+  }, [user, token, profileId, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    setSaving(true);
 
     if (selectedPlugins.length === 0) {
       setError('Please select at least one plugin');
-      setLoading(false);
+      setSaving(false);
       return;
     }
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/profiles`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/profiles/${profileId}`,
         {
-          method: 'POST',
+          method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
@@ -69,14 +98,14 @@ export default function PublishProfile() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Failed to create profile');
+        throw new Error(data.error || 'Failed to update profile');
       }
 
       navigate('/my-profiles');
     } catch (err: any) {
-      setError(err.message || 'Failed to create profile');
+      setError(err.message || 'Failed to update profile');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
@@ -104,24 +133,25 @@ export default function PublishProfile() {
     setSelectedPlugins([]);
   };
 
-  if (!user || !token) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="max-w-md mx-auto px-6 text-center">
-          <div className="mb-6 text-6xl">🔒</div>
-          <h1 className="text-3xl font-bold text-white mb-4">Login Required</h1>
-          <p className="text-gray-400 mb-8">
-            You need to sign in with GitHub to create a profile.
-          </p>
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error && !name) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">❌</div>
+          <h2 className="text-2xl font-bold text-white mb-2">{error}</h2>
           <button
-            onClick={() => {
-              const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
-              const redirectUri = encodeURIComponent(window.location.origin + '/auth/callback');
-              window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}`;
-            }}
-            className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all"
+            onClick={() => navigate('/my-profiles')}
+            className="mt-4 px-6 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition"
           >
-            Sign in with GitHub
+            Back to My Profiles
           </button>
         </div>
       </div>
@@ -132,14 +162,14 @@ export default function PublishProfile() {
     <div className="min-h-screen bg-gray-950">
       <div className="max-w-4xl mx-auto px-6 py-12">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Create Profile</h1>
+          <h1 className="text-4xl font-bold text-white mb-2">Edit Profile</h1>
           <p className="text-gray-400">
-            Create a curated collection of plugins for a specific use case
+            Update your plugin profile collection
           </p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 rounded-lg text-red-400">
+          <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400">
             {error}
           </div>
         )}
@@ -147,23 +177,16 @@ export default function PublishProfile() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Profile Name *
+              Profile Name * (read-only)
             </label>
             <input
               type="text"
               value={name}
-              onChange={(e) => {
-                const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/--+/g, '-').replace(/^-|-$/g, '');
-                setName(value);
-              }}
-              required
-              maxLength={100}
-              pattern="^[a-z0-9]+(-[a-z0-9]+)*$"
-              placeholder="e.g., webdev, data-science, devops"
-              className="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
+              disabled
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-500 cursor-not-allowed"
             />
             <p className="mt-1 text-sm text-gray-500">
-              Kebab-case only: lowercase, numbers, hyphens (e.g., my-awesome-profile)
+              Profile names cannot be changed
             </p>
           </div>
 
@@ -224,7 +247,6 @@ export default function PublishProfile() {
               </div>
             </div>
             
-            {/* Search Input */}
             <input
               type="text"
               value={searchQuery}
@@ -275,31 +297,20 @@ export default function PublishProfile() {
           <div className="flex gap-4">
             <button
               type="submit"
-              disabled={loading}
+              disabled={saving}
               className="flex-1 px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
-              {loading ? 'Creating...' : 'Create Profile'}
+              {saving ? 'Saving...' : 'Save Changes'}
             </button>
             <button
               type="button"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate('/my-profiles')}
               className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition"
             >
               Cancel
             </button>
           </div>
         </form>
-
-        <div className="mt-8 p-4 bg-blue-900/20 border border-blue-500/50 rounded-lg">
-          <h3 className="font-semibold text-blue-400 mb-2">📝 Profile Guidelines</h3>
-          <ul className="text-sm text-blue-300 space-y-1">
-            <li>• Choose a clear, descriptive name</li>
-            <li>• Select 5-10 related plugins that work well together</li>
-            <li>• Write a helpful description explaining the use case</li>
-            <li>• Add relevant tags for discoverability</li>
-            <li>• Your profile will be reviewed before being published</li>
-          </ul>
-        </div>
       </div>
     </div>
   );

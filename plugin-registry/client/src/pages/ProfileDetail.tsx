@@ -83,7 +83,7 @@ export default function ProfileDetail() {
             <div className="text-lg font-semibold text-white">{profile.plugins.length}</div>
           </div>
           <div className="p-4 bg-gray-900 border border-gray-800 rounded-lg">
-            <div className="text-sm text-gray-500">Downloads</div>
+            <div className="text-sm text-gray-500">Views</div>
             <div className="text-lg font-semibold text-white">{profile.downloads.toLocaleString()}</div>
           </div>
           <div className="p-4 bg-gray-900 border border-gray-800 rounded-lg">
@@ -118,13 +118,13 @@ export default function ProfileDetail() {
             <div>
               <p className="text-gray-400 mb-2">Install this profile:</p>
               <div className="bg-gray-950 rounded-lg p-4 font-mono text-sm">
-                <span className="text-purple-400">zal /profiles install {author}-{profile.name}</span>
+                <span className="text-purple-400">zal /profiles install {author}-{profile.name.toLowerCase().replace(/\s+/g, '-')}</span>
               </div>
             </div>
             <div>
               <p className="text-gray-400 mb-2">Install and set as default:</p>
               <div className="bg-gray-950 rounded-lg p-4 font-mono text-sm">
-                <span className="text-purple-400">zal /profiles install-default {author}-{profile.name}</span>
+                <span className="text-purple-400">zal /profiles install-default {author}-{profile.name.toLowerCase().replace(/\s+/g, '-')}</span>
               </div>
             </div>
           </div>

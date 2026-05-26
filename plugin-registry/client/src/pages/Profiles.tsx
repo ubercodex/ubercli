@@ -107,7 +107,7 @@ export default function Profiles() {
 
                 <div className="flex items-center justify-between text-sm text-gray-500">
                   <span>{profile.plugin_count} plugins</span>
-                  <span>{profile.downloads.toLocaleString()} downloads</span>
+                  <span>👁️ {profile.downloads.toLocaleString()} views</span>
                 </div>
               </Link>
             ))}
