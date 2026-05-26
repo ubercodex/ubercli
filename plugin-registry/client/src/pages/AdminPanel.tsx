@@ -36,13 +36,13 @@ export default function AdminPanel() {
   const [selectedPlugin, setSelectedPlugin] = useState<Plugin | null>(null);
 
   useEffect(() => {
-    if (!user?.isAdmin || !token) {
+    if (!token) {
       navigate('/');
       return;
     }
 
     fetchData();
-  }, [user, token, navigate, activeTab]);
+  }, [token, navigate, activeTab]);
 
   const fetchData = async () => {
     setLoading(true);
