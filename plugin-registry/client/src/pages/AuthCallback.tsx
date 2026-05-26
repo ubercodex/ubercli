@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -7,8 +7,13 @@ export default function AuthCallback() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const hasAttempted = useRef(false);
 
   useEffect(() => {
+    // Prevent double execution in React strict mode
+    if (hasAttempted.current) return;
+    hasAttempted.current = true;
+
     const code = searchParams.get('code');
     
     if (!code) {
