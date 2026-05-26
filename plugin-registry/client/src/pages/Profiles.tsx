@@ -63,7 +63,7 @@ export default function Profiles() {
             <div className="text-gray-500 mb-4">
               {searchTerm ? 'No profiles found matching your search' : 'No profiles available yet'}
             </div>
-            <Link to="/publish" className="text-purple-400 hover:text-purple-300">
+            <Link to="/publish-profile" className="text-purple-400 hover:text-purple-300">
               Be the first to create a profile →
             </Link>
           </div>

@@ -24,7 +24,6 @@ export default function PublishProfile() {
 
   useEffect(() => {
     if (!user || !token) {
-      navigate('/');
       return;
     }
 
@@ -37,7 +36,7 @@ export default function PublishProfile() {
       .catch(() => {
         setError('Failed to load plugins');
       });
-  }, [user, token, navigate]);
+  }, [user, token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +105,27 @@ export default function PublishProfile() {
   };
 
   if (!user || !token) {
-    return null;
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="max-w-md mx-auto px-6 text-center">
+          <div className="mb-6 text-6xl">🔒</div>
+          <h1 className="text-3xl font-bold text-white mb-4">Login Required</h1>
+          <p className="text-gray-400 mb-8">
+            You need to sign in with GitHub to create a profile.
+          </p>
+          <button
+            onClick={() => {
+              const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
+              const redirectUri = encodeURIComponent(window.location.origin + '/auth/callback');
+              window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}`;
+            }}
+            className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all"
+          >
+            Sign in with GitHub
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
