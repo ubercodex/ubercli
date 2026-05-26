@@ -33,7 +33,7 @@ export default function PublishProfile() {
       .then(data => {
         setAvailablePlugins(data.plugins || []);
       })
-      .catch(err => {
+      .catch(() => {
         setError('Failed to load plugins');
       });
   }, [user, token, navigate]);
