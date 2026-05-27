@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import Layout from './components/Layout';
+import ModernLayout from './components/ModernLayout';
+import './styles/animations.css';
 import NewHome from './pages/NewHome';
 import Registry from './pages/Registry';
 import Contact from './pages/Contact';
@@ -18,7 +19,7 @@ import EditProfile from './pages/EditProfile';
 export default function App() {
   return (
     <AuthProvider>
-      <Layout>
+      <ModernLayout>
         <Routes>
           <Route path="/" element={<NewHome />} />
           <Route path="/registry" element={<Registry />} />
@@ -34,7 +35,7 @@ export default function App() {
           <Route path="/my-profiles" element={<MyProfiles />} />
           <Route path="/edit-profile/:profileId" element={<EditProfile />} />
         </Routes>
-      </Layout>
+      </ModernLayout>
     </AuthProvider>
   );
 }
