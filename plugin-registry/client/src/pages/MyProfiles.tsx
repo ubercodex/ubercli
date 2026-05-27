@@ -162,7 +162,7 @@ export default function MyProfiles() {
                     <span className="px-3 py-1 bg-slate-700/50 text-slate-400 text-xs rounded-lg">
                       +{profile.tags.length - 3}
                     </span>
-                  ))}
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between text-sm text-slate-500 border-t border-purple-500/20 pt-4">
