@@ -45,11 +45,11 @@ export default function MyProfiles() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4">🔒</div>
-          <h2 className="text-2xl font-bold text-white mb-2">Login Required</h2>
-          <p className="text-gray-400">Please sign in to view your profiles</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center animate-scale-in">
+          <div className="text-7xl mb-6 animate-pulse-glow">🔒</div>
+          <h2 className="text-3xl font-bold text-white mb-4">Login Required</h2>
+          <p className="text-slate-400 text-lg">Please sign in to view your profiles</p>
         </div>
       </div>
     );
@@ -94,70 +94,78 @@ export default function MyProfiles() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen py-16 px-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-12 animate-fade-in-down">
           <div>
-            <h1 className="text-4xl font-bold text-white mb-2">My Profiles</h1>
-            <p className="text-gray-400">Manage your plugin profile collections</p>
+            <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent leading-tight pb-2">My Profiles</h1>
+            <p className="text-slate-400 text-xl">Manage your plugin profile collections</p>
           </div>
           <Link
             to="/publish-profile"
-            className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all"
+            className="relative group inline-block"
           >
-            + Create Profile
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
+            <div className="relative px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl text-white font-semibold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all">
+              + Create Profile
+            </div>
           </Link>
         </div>
 
         {loading ? (
-          <div className="text-center py-12">
-            <div className="text-gray-500">Loading your profiles...</div>
+          <div className="text-center py-32">
+            <div className="inline-block w-12 h-12 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin mb-4"></div>
+            <div className="text-slate-400">Loading your profiles...</div>
           </div>
         ) : profiles.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">📋</div>
-            <h2 className="text-2xl font-bold text-white mb-2">No profiles yet</h2>
-            <p className="text-gray-400 mb-6">Create your first plugin profile collection</p>
+          <div className="text-center py-20 animate-fade-in-up">
+            <div className="text-8xl mb-6 animate-pulse-glow">📋</div>
+            <h2 className="text-3xl font-bold text-white mb-4">No profiles yet</h2>
+            <p className="text-slate-400 text-lg mb-8">Create your first plugin profile collection</p>
             <Link
               to="/publish-profile"
-              className="inline-block px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all"
+              className="relative group inline-block"
             >
-              Create Your First Profile
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
+              <div className="relative px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl text-white font-semibold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all">
+                Create Your First Profile
+              </div>
             </Link>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {profiles.map(profile => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up">
+            {profiles.map((profile, index) => (
               <div
                 key={profile.id}
-                className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-purple-500 transition"
+                className="bg-[#12121a]/80 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-6 hover:border-purple-500/40 hover:shadow-lg hover:shadow-purple-500/20 transition-all group"
+                style={{ animationDelay: `${index * 50}ms` }}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-white mb-1">{profile.name}</h3>
-                    <p className="text-sm text-gray-500">by {profile.author}</p>
+                    <h3 className="text-xl font-bold text-white mb-1 group-hover:text-purple-300 transition-colors">{profile.name}</h3>
+                    <p className="text-sm text-slate-500">by {profile.author}</p>
                   </div>
-                  <span className={`px-3 py-1 text-xs font-semibold border rounded-full ${getStatusBadge(profile.status)}`}>
+                  <span className={`px-3 py-1 text-xs font-semibold border rounded-xl ${getStatusBadge(profile.status)}`}>
                     {profile.status}
                   </span>
                 </div>
 
-                <p className="text-gray-400 text-sm mb-4 line-clamp-2">{profile.description}</p>
+                <p className="text-slate-400 text-sm mb-4 line-clamp-2">{profile.description}</p>
 
                 <div className="flex flex-wrap gap-2 mb-4">
                   {profile.tags.slice(0, 3).map(tag => (
-                    <span key={tag} className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded">
+                    <span key={tag} className="px-3 py-1 bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs rounded-lg">
                       {tag}
                     </span>
                   ))}
                   {profile.tags.length > 3 && (
-                    <span className="px-2 py-1 bg-gray-800 text-gray-400 text-xs rounded">
+                    <span className="px-3 py-1 bg-slate-700/50 text-slate-400 text-xs rounded-lg">
                       +{profile.tags.length - 3}
                     </span>
-                  )}
+                  ))}
                 </div>
 
-                <div className="flex items-center justify-between text-sm text-gray-500 border-t border-gray-800 pt-4">
+                <div className="flex items-center justify-between text-sm text-slate-500 border-t border-purple-500/20 pt-4">
                   <span>🔌 {profile.plugin_count} plugins</span>
                   <span>👁️ {profile.downloads} views</span>
                 </div>
@@ -166,7 +174,7 @@ export default function MyProfiles() {
                   {profile.status === 'approved' && (
                     <Link
                       to={`/profiles/${profile.author}/${profile.name}`}
-                      className="flex-1 text-center px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg hover:bg-purple-500/30 transition text-sm font-semibold"
+                      className="flex-1 text-center px-4 py-2 bg-purple-500/20 border border-purple-500/30 text-purple-300 rounded-xl hover:bg-purple-500/30 transition-all text-sm font-semibold"
                     >
                       View
                     </Link>
@@ -174,7 +182,7 @@ export default function MyProfiles() {
                   
                   <Link
                     to={`/edit-profile/${profile.id}`}
-                    className="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition text-sm font-semibold"
+                    className="px-4 py-2 bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 rounded-xl hover:bg-cyan-500/30 transition-all text-sm font-semibold"
                   >
                     ✏️
                   </Link>
@@ -182,20 +190,20 @@ export default function MyProfiles() {
                   <button
                     onClick={() => handleDelete(profile.id, profile.name)}
                     disabled={deleting === profile.id}
-                    className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-red-500/20 border border-red-500/30 text-red-300 rounded-xl hover:bg-red-500/30 transition-all text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {deleting === profile.id ? '...' : '🗑️'}
                   </button>
                 </div>
 
                 {profile.status === 'pending' && (
-                  <div className="mt-2 text-center text-xs text-yellow-400">
+                  <div className="mt-3 text-center text-xs text-yellow-400 bg-yellow-500/10 border border-yellow-500/30 rounded-lg py-2">
                     ⏳ Awaiting admin approval
                   </div>
                 )}
 
                 {profile.status === 'rejected' && (
-                  <div className="mt-2 text-center text-xs text-red-400">
+                  <div className="mt-3 text-center text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg py-2">
                     ❌ Rejected - Please contact support
                   </div>
                 )}

@@ -193,31 +193,31 @@ export default function Publish() {
   };
 
   return (
-    <div className="min-h-screen py-12 px-6">
+    <div className="min-h-screen py-16 px-6">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-black text-white mb-2">Publish Plugin</h1>
-          <p className="text-slate-400">Share your custom tool with the ZAL community</p>
+        <div className="mb-12 text-center animate-fade-in-down">
+          <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent leading-tight pb-2">Publish Plugin</h1>
+          <p className="text-slate-400 text-xl">Share your custom tool with the ZAL community</p>
         </div>
 
         {/* Quick Export Tip */}
-        <div className="mb-6 p-5 bg-gradient-to-r from-green-500/20 to-cyan-500/20 border-2 border-green-500/40 rounded-2xl">
+        <div className="mb-8 p-6 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-2xl backdrop-blur-xl animate-fade-in-up">
           <div className="flex items-start gap-4">
-            <div className="text-4xl">⚡</div>
+            <div className="text-5xl animate-pulse-glow">⚡</div>
             <div>
-              <h3 className="text-lg font-bold text-white mb-2">Quick Export from CLI</h3>
-              <p className="text-slate-300 text-sm mb-3">
+              <h3 className="text-xl font-bold text-white mb-3">Quick Export from CLI</h3>
+              <p className="text-slate-300 mb-4">
                 Already created a plugin in ZAL? Export it instantly!
               </p>
               <div className="flex items-center gap-2 text-sm flex-wrap">
                 <span className="text-slate-400">In CLI:</span>
-                <code className="px-3 py-1.5 bg-black/40 rounded text-cyan-400 font-mono">/plugins</code>
+                <code className="px-3 py-1.5 bg-black/40 rounded-lg text-purple-400 font-mono">/plugins</code>
                 <span className="text-slate-400">→</span>
-                <code className="px-3 py-1.5 bg-black/40 rounded text-cyan-400 font-mono">Manage Tools</code>
+                <code className="px-3 py-1.5 bg-black/40 rounded-lg text-purple-400 font-mono">Manage Tools</code>
                 <span className="text-slate-400">→ Select your tool →</span>
-                <kbd className="px-3 py-1.5 bg-gradient-to-br from-green-500/30 to-green-600/30 border border-green-500/50 rounded text-green-300 font-bold shadow-lg">E</kbd>
+                <kbd className="px-3 py-1.5 bg-gradient-to-br from-purple-500/30 to-pink-500/30 border border-purple-500/50 rounded-lg text-purple-300 font-bold shadow-lg">E</kbd>
               </div>
-              <p className="text-xs text-slate-400 mt-2">
+              <p className="text-sm text-slate-400 mt-3">
                 💾 The JSON file will be saved to your workspace root. Upload it below!
               </p>
             </div>
@@ -248,23 +248,23 @@ export default function Publish() {
             />
             
             {!pluginData ? (
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-violet-500/5 rounded-2xl blur-xl"></div>
+              <div className="relative animate-fade-in-up">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl blur-xl"></div>
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="relative w-full px-8 py-16 bg-[#0d0d24]/80 backdrop-blur-xl border-2 border-dashed border-cyan-500/30 rounded-2xl hover:border-cyan-500/60 hover:bg-[#0d0d24]/90 transition-all text-center group"
+                  className="relative w-full px-8 py-16 bg-[#12121a]/80 backdrop-blur-xl border-2 border-dashed border-purple-500/30 rounded-2xl hover:border-purple-500/60 hover:bg-[#12121a]/90 transition-all text-center group"
                 >
                   <div className="mb-6 group-hover:scale-110 transition-transform">
-                    <svg className="w-20 h-20 mx-auto text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-20 h-20 mx-auto text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
                   </div>
-                  <div className="text-white font-bold text-2xl mb-3">Upload Your Plugin</div>
-                  <div className="text-slate-400 text-base mb-6 max-w-md mx-auto">
+                  <div className="text-white font-bold text-3xl mb-3">Upload Your Plugin</div>
+                  <div className="text-slate-400 text-lg mb-6 max-w-md mx-auto">
                     Click here or drag and drop your plugin JSON file to get started
                   </div>
-                  <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500/20 to-violet-500/20 border border-cyan-500/30 rounded-xl text-cyan-400 font-semibold">
+                  <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-xl text-purple-300 font-semibold hover:bg-purple-500/30 transition-all">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
@@ -276,19 +276,19 @@ export default function Publish() {
                 </button>
               </div>
             ) : (
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-cyan-500/5 rounded-2xl blur-xl"></div>
-                <div className="relative p-6 bg-[#0d0d24]/80 backdrop-blur-xl border-2 border-green-500/30 rounded-2xl">
+              <div className="relative animate-scale-in">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-cyan-500/10 rounded-2xl blur-xl"></div>
+                <div className="relative p-6 bg-[#12121a]/80 backdrop-blur-xl border-2 border-green-500/30 rounded-2xl">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-                        <svg className="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                        <svg className="w-7 h-7 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
                       <div>
-                        <div className="text-green-400 font-bold text-lg">Plugin Loaded Successfully</div>
-                        <div className="text-slate-400 text-sm">Ready to publish</div>
+                        <div className="text-green-400 font-bold text-xl">Plugin Loaded Successfully</div>
+                        <div className="text-slate-400">Ready to publish</div>
                       </div>
                     </div>
                     <button
