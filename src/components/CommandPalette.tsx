@@ -8,10 +8,11 @@ export interface PaletteItem {
 }
 
 export const PALETTE_ITEMS: PaletteItem[] = [
-	{ cmd: '/settings', description: 'Open settings (theme, API keys, models)'  },
-	{ cmd: '/plugins',  description: 'Manage tools & profiles for LLM tool use' },
-	{ cmd: '/memory',   description: 'View or clear workspace memory'           },
-	{ cmd: '/exit',     description: 'Exit ZAL'                                  },
+	{ cmd: '/settings', description: 'Open settings (theme, API keys, models)' },
+	{ cmd: '/plugins',  description: 'Manage custom tools and plugins'         },
+	{ cmd: '/profiles', description: 'Manage tool profiles'                    },
+	{ cmd: '/memory',   description: 'View or clear workspace memory'          },
+	{ cmd: '/exit',     description: 'Exit ZAL'                                 },
 ];
 
 interface CommandPaletteProps {

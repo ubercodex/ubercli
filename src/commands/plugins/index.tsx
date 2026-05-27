@@ -24,7 +24,7 @@ const MENU_ITEMS = [
 
 export default function PluginsCommand({ store, settings, onSave, onBack }: PluginsCommandProps): React.JSX.Element {
 	const theme = useTheme();
-	const [view, setView]         = useState<PluginView>('menu');
+	const [view, setView]         = useState<PluginView>('tools'); // Start directly at tools
 	const [cursor, setCursor]     = useState(0);
 	const [editingTool, setEditingTool] = useState<PluginTool | null>(null);
 
@@ -45,7 +45,7 @@ export default function PluginsCommand({ store, settings, onSave, onBack }: Plug
 				onSave={onSave}
 				onEdit={t => { setEditingTool(t); setView('editor'); }}
 				onNew={() => setView('creator')}
-				onBack={() => setView('menu')}
+				onBack={onBack}
 			/>
 		);
 	}

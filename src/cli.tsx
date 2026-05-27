@@ -5,6 +5,9 @@ import App from './App.js';
 
 process.on('unhandledRejection', () => { /* handled inside React components */ });
 
+// Clear terminal to prevent double rendering artifacts
+process.stdout.write('\x1Bc');
+
 // Parse command-line arguments
 const args = process.argv.slice(2);
 const command = args.join(' ');

@@ -4,6 +4,7 @@ import Splash from './Splash.js';
 import SettingsCommand from './commands/settings/index.js';
 import ChatCommand from './commands/chat/index.js';
 import PluginsCommand from './commands/plugins/index.js';
+import ProfilesCommand from './commands/profiles/index.js';
 import Installer from './commands/plugins/installer.js';
 import ProfileInstaller from './commands/plugins/profileInstaller.js';
 import MemoryCommand from './commands/memory/index.js';
@@ -14,7 +15,7 @@ import { ThemeContext } from './context/ThemeContext.js';
 import { loadSettings, saveSettings, getWorkspaceName, loadPluginStore, savePluginStore } from './store.js';
 import { loadWorkspaceMemory, saveWorkspaceMemory } from './memory.js';
 
-type Overlay = null | 'settings' | 'plugins' | 'plugin-install' | 'profile-install' | 'memory';
+type Overlay = null | 'settings' | 'plugins' | 'profiles' | 'plugin-install' | 'profile-install' | 'memory';
 
 interface AppProps {
 	initialCommand?: string;
@@ -57,6 +58,7 @@ export default function App({ initialCommand }: AppProps = {}): React.JSX.Elemen
 	const handleChatCommand = (cmd: string) => {
 		if (cmd === '/settings') { setOverlay('settings'); return; }
 		if (cmd === '/plugins')  { setOverlay('plugins');  return; }
+		if (cmd === '/profiles') { setOverlay('profiles'); return; }
 		if (cmd.startsWith('/plugins install ')) {
 			const pluginName = cmd.replace('/plugins install ', '').trim();
 			if (pluginName) {
@@ -116,6 +118,18 @@ export default function App({ initialCommand }: AppProps = {}): React.JSX.Elemen
 				<PluginsCommand
 					store={pluginStore}
 					settings={settings}
+					onSave={handleSavePluginStore}
+					onBack={() => setOverlay(null)}
+				/>
+			</ThemeContext.Provider>
+		);
+	}
+
+	if (overlay === 'profiles') {
+		return (
+			<ThemeContext.Provider value={theme}>
+				<ProfilesCommand
+					store={pluginStore}
 					onSave={handleSavePluginStore}
 					onBack={() => setOverlay(null)}
 				/>
