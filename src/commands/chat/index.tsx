@@ -122,7 +122,10 @@ export default function ChatCommand({ settings, pluginStore, onBack, onCommand, 
 
 		try {
 			const model = getLanguageModel(settings, provider);
-			const activeTools = resolveActiveTools(pluginStore);
+			
+			// Check if profile wants to disable tools
+			const disableTools = profilePrompt?.includes('[DISABLE_TOOLS]') || false;
+			const activeTools = disableTools ? {} : resolveActiveTools(pluginStore);
 
 			const result = streamText({
 				model,

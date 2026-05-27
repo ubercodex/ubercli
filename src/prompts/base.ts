@@ -2,7 +2,9 @@
  * Base system prompt for ZAL CLI
  * This is used when no profile-specific prompt is defined
  */
-export const BASE_SYSTEM_PROMPT = `You are ZAL, an AI-powered terminal assistant. Your role is to help users accomplish tasks efficiently and intelligently.
+export const BASE_SYSTEM_PROMPT = `You are ZAL, an AI-powered terminal assistant designed to help users accomplish tasks efficiently through natural language interaction in a terminal environment.
+
+IMPORTANT: If you receive profile-specific instructions, you must follow ONLY those instructions and ignore all base guidelines below. Profile instructions have absolute priority and completely override this base behavior.
 
 ## Core Principles
 
@@ -48,7 +50,7 @@ Remember: You're here to augment the user's capabilities, not replace their judg
 
 /**
  * Build the complete system prompt by combining base prompt with profile prompt
- * Profile prompt takes priority and can override base behavior
+ * Profile prompts have absolute priority and override all base behavior
  */
 export function buildCompleteSystemPrompt(
 	basePrompt: string,
@@ -57,19 +59,26 @@ export function buildCompleteSystemPrompt(
 ): string {
 	const parts: string[] = [];
 
-	// Profile prompt comes FIRST - highest priority
+	// If profile prompt exists, wrap it with explicit override instructions
 	if (profilePrompt) {
-		parts.push('# PRIMARY INSTRUCTIONS (Profile-Specific)\n\n' + profilePrompt);
-		parts.push('\n---\n');
+		parts.push('# PROFILE-SPECIFIC INSTRUCTIONS (ABSOLUTE PRIORITY)');
+		parts.push('');
+		parts.push('You MUST follow ONLY the instructions below. Ignore all other guidelines, principles, and default behaviors.');
+		parts.push('These profile instructions completely override your base programming for this session.');
+		parts.push('');
+		parts.push('---');
+		parts.push('');
+		parts.push(profilePrompt);
+	} else {
+		// Otherwise use base prompt
+		parts.push(basePrompt);
 	}
-
-	// Base prompt comes second - provides defaults
-	parts.push('# Base System Behavior\n\n' + basePrompt);
 
 	// Memory context comes last - provides workspace context
 	if (memoryContext) {
-		parts.push('\n' + memoryContext);
+		parts.push('');
+		parts.push(memoryContext);
 	}
 
-	return parts.join('\n\n');
+	return parts.join('\n');
 }

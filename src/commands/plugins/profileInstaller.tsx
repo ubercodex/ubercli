@@ -117,6 +117,7 @@ export default function ProfileInstaller({
 					name: profile.name,
 					description: profile.description,
 					toolIds: installedPluginIds,
+					systemPrompt: profile.system_prompt || undefined,
 				};
 				
 				// Update store
