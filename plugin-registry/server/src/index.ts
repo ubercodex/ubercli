@@ -54,7 +54,7 @@ await fastify.register(fastifyStatic, {
 });
 
 // Catch-all route for client-side routing (must be last)
-fastify.setNotFoundHandler(async (request, reply) => {
+fastify.setNotFoundHandler(async (request: any, reply: any) => {
 	// If it's an API request, return 404
 	if (request.url.startsWith('/api/')) {
 		return reply.code(404).send({ error: 'Not found' });
