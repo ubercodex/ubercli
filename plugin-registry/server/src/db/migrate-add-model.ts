@@ -1,24 +1,29 @@
-import { db } from './index.js';
+import Database from 'better-sqlite3';
+import path from 'path';
+import fs from 'fs';
 
-console.log('🔄 Adding model column to plugins table...');
+const dbPath = path.join(__dirname, '../../data/registry.db');
+const db = new Database(dbPath);
 
 try {
-  // Check if column already exists
-  const tableInfo = db.prepare("PRAGMA table_info(plugins)").all() as any[];
-  const hasModel = tableInfo.some((col: any) => col.name === 'model');
+  console.log('Adding model field to plugins table...');
   
-  if (hasModel) {
-    console.log('✅ Column model already exists, skipping migration');
+  // Check if column already exists
+  const columns = db.prepare("PRAGMA table_info(plugins)").all() as any[];
+  const hasModel = columns.some((col: any) => col.name === 'model');
+  
+  if (!hasModel) {
+    db.exec(`
+      ALTER TABLE plugins ADD COLUMN model TEXT;
+      CREATE INDEX IF NOT EXISTS idx_plugins_model ON plugins(model);
+    `);
+    console.log('✅ Model field added successfully!');
   } else {
-    // Add the column
-    db.prepare('ALTER TABLE plugins ADD COLUMN model TEXT').run();
-    // Add index
-    db.prepare('CREATE INDEX IF NOT EXISTS idx_plugins_model ON plugins(model)').run();
-    console.log('✅ Successfully added model column to plugins table');
+    console.log('ℹ️  Model field already exists, skipping migration.');
   }
+  
+  db.close();
 } catch (error) {
   console.error('❌ Migration failed:', error);
   process.exit(1);
 }
-
-console.log('✅ Migration complete!');

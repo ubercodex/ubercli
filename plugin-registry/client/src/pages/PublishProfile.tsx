@@ -166,18 +166,22 @@ export default function PublishProfile() {
                 type="text"
                 value={name}
                 onChange={(e) => {
-                  const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/--+/g, '-').replace(/^-|-$/g, '');
+                  const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
                   setName(value);
+                }}
+                onBlur={(e) => {
+                  const cleaned = e.target.value.replace(/--+/g, '-').replace(/^-+|-+$/g, '');
+                  setName(cleaned);
                 }}
                 required
                 maxLength={100}
-                pattern="^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
-                placeholder="e.g., webdev, data-science, devops-tools"
+                pattern="^[a-z0-9]+(-[a-z0-9]+)*$"
+                placeholder="e.g., webdev, data-science, devops"
                 className="relative w-full px-4 py-3 bg-[#12121a]/80 backdrop-blur-xl border border-purple-500/20 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 transition-all"
               />
             </div>
             <p className="mt-2 text-sm text-slate-500">
-              Must start with a letter, then lowercase letters, numbers, and hyphens (e.g., webdev-2024)
+              Kebab-case only: lowercase, numbers, hyphens (e.g., my-awesome-profile)
             </p>
           </div>
 

@@ -18,28 +18,13 @@ db.exec(SCHEMA);
 
 // Auto-migration: Add system_prompt column if it doesn't exist
 try {
-	const profileTableInfo = db.prepare("PRAGMA table_info(profiles)").all() as any[];
-	const hasSystemPrompt = profileTableInfo.some((col: any) => col.name === 'system_prompt');
+	const tableInfo = db.prepare("PRAGMA table_info(profiles)").all() as any[];
+	const hasSystemPrompt = tableInfo.some((col: any) => col.name === 'system_prompt');
 	
 	if (!hasSystemPrompt) {
 		console.log('🔄 Running migration: Adding system_prompt column...');
 		db.prepare('ALTER TABLE profiles ADD COLUMN system_prompt TEXT').run();
 		console.log('✅ Migration complete: system_prompt column added');
-	}
-} catch (error) {
-	console.error('⚠️ Migration warning:', error);
-}
-
-// Auto-migration: Add model column if it doesn't exist
-try {
-	const pluginTableInfo = db.prepare("PRAGMA table_info(plugins)").all() as any[];
-	const hasModel = pluginTableInfo.some((col: any) => col.name === 'model');
-	
-	if (!hasModel) {
-		console.log('🔄 Running migration: Adding model column...');
-		db.prepare('ALTER TABLE plugins ADD COLUMN model TEXT').run();
-		db.prepare('CREATE INDEX IF NOT EXISTS idx_plugins_model ON plugins(model)').run();
-		console.log('✅ Migration complete: model column added');
 	}
 } catch (error) {
 	console.error('⚠️ Migration warning:', error);
