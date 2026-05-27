@@ -10,6 +10,8 @@ interface Plugin {
   downloads: number;
   tags: string[];
   createdAt: string;
+  versionCount?: number;
+  pendingVersions?: number;
 }
 
 export default function Registry() {
@@ -172,18 +174,30 @@ export default function Registry() {
                   className="p-6 bg-[#0d0d24]/60 backdrop-blur-xl border border-cyan-500/12 rounded-2xl hover:border-cyan-500/30 hover:shadow-lg hover:shadow-cyan-500/10 transition group"
                 >
                   <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition">
-                        {plugin.name}
-                      </h3>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition">
+                          {plugin.name}
+                        </h3>
+                        {plugin.versionCount && plugin.versionCount > 1 && (
+                          <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded-full border border-purple-500/30 font-semibold">
+                            {plugin.versionCount} versions
+                          </span>
+                        )}
+                        {plugin.pendingVersions && plugin.pendingVersions > 0 && (
+                          <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full border border-yellow-500/30 font-semibold">
+                            {plugin.pendingVersions} pending
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm text-slate-500">by {plugin.author}</p>
                     </div>
-                    <div className="text-sm text-slate-500 flex items-center gap-1">
+                    <div className="text-sm text-slate-500 flex items-center gap-1 flex-shrink-0">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
-                      {plugin.downloads.toLocaleString()} views
+                      {plugin.downloads.toLocaleString()}
                     </div>
                   </div>
                   <p className="text-slate-400 mb-4 line-clamp-2 text-sm">{plugin.description}</p>

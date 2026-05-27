@@ -105,6 +105,14 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 		const rows = db.prepare(query).all(...params) as any[];
 		const plugins: Plugin[] = rows.map((row) => {
 			const profileCount = db.prepare('SELECT COUNT(*) as count FROM profile_plugins WHERE plugin_id = ?').get(row.id) as { count: number };
+		// Get version count and pending status
+		const versionStats = db.prepare(`
+			SELECT 
+				COUNT(*) as total_versions,
+				SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending_versions
+			FROM plugin_versions 
+			WHERE plugin_id = ?
+		`).get(row.id) as { total_versions: number; pending_versions: number };
 			return {
 				id: row.id,
 				author: row.author,

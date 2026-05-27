@@ -12,6 +12,8 @@ interface Plugin {
   profileCount?: number;
   tags: string[];
   createdAt: string;
+  versionCount?: number;
+  pendingVersions?: number;
 }
 
 export default function MyPlugins() {
@@ -193,9 +195,21 @@ export default function MyPlugins() {
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-white mb-1">
-                        {plugin.name}
-                      </h3>
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h3 className="text-xl font-bold text-white">
+                          {plugin.name}
+                        </h3>
+                        {plugin.versionCount && plugin.versionCount > 1 && (
+                          <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded-full border border-purple-500/30 font-semibold">
+                            {plugin.versionCount} versions
+                          </span>
+                        )}
+                        {plugin.pendingVersions && plugin.pendingVersions > 0 && (
+                          <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full border border-yellow-500/30 font-semibold">
+                            {plugin.pendingVersions} pending
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm text-slate-500">v{plugin.version}</p>
                     </div>
                     <div className={`px-3 py-1 rounded-xl text-xs font-semibold border flex items-center gap-1 ${getStatusColor(plugin.status)}`}>
