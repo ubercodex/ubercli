@@ -24,16 +24,39 @@ export default function PluginDetail() {
   const navigate = useNavigate();
   const [plugin, setPlugin] = useState<Plugin | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedVersion, setSelectedVersion] = useState<string>('');
+  const [availableVersions, setAvailableVersions] = useState<Array<{version: string; status: string}>>([]);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/plugins/${author}/${name}`)
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+    
+    // Fetch plugin with latest version
+    fetch(`${apiUrl}/plugins/${author}/${name}`)
       .then(res => res.json())
       .then(data => {
         setPlugin(data);
+        setSelectedVersion(data.version);
         setLoading(false);
+        
+        // Fetch all versions for dropdown
+        fetch(`${apiUrl}/plugins/${author}/${name}/versions`)
+          .then(res => res.json())
+          .then(versions => setAvailableVersions(versions))
+          .catch(() => {});
       })
       .catch(() => setLoading(false));
   }, [author, name]);
+  
+  // Fetch specific version when dropdown changes
+  useEffect(() => {
+    if (selectedVersion && plugin && selectedVersion !== plugin.version) {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+      fetch(`${apiUrl}/plugins/${author}/${name}?version=${selectedVersion}`)
+        .then(res => res.json())
+        .then(data => setPlugin(data))
+        .catch(() => {});
+    }
+  }, [selectedVersion, author, name]);
 
   if (loading) {
     return (
@@ -82,7 +105,24 @@ export default function PluginDetail() {
           <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent leading-tight pb-2">
             {plugin.name}
           </h1>
-          <p className="text-2xl text-slate-400">by {plugin.author}</p>
+          <p className="text-2xl text-slate-400 mb-4">by {plugin.author}</p>
+          
+          {availableVersions.length > 1 && (
+            <div className="inline-block">
+              <label className="text-sm text-slate-500 mb-2 block">Select Version:</label>
+              <select
+                value={selectedVersion}
+                onChange={(e) => setSelectedVersion(e.target.value)}
+                className="px-4 py-2 bg-[#0a0a0f] border border-purple-500/30 rounded-xl text-white focus:outline-none focus:border-purple-500 cursor-pointer hover:border-purple-500/50 transition-colors"
+              >
+                {availableVersions.map((v: any) => (
+                  <option key={v.version} value={v.version}>
+                    v{v.version} {v.status === 'pending' && '(⏳ pending)'} {v.status === 'rejected' && '(❌ rejected)'}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         {/* Stats Grid */}

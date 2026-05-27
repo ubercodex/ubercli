@@ -236,6 +236,25 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 		return plugin;
 	});
 
+	// Get all versions of a plugin
+	fastify.get('/plugins/:author/:name/versions', async (request, reply) => {
+		const { author, name } = request.params as { author: string; name: string };
+		
+		const pluginRow = db.prepare('SELECT id FROM plugins WHERE author = ? AND name = ?').get(author, name);
+		if (!pluginRow) {
+			return reply.code(404).send({ error: 'Plugin not found' });
+		}
+		
+		const versions = db.prepare(`
+			SELECT version, status, created_at, approved_at, approved_by
+			FROM plugin_versions
+			WHERE plugin_id = ?
+			ORDER BY created_at DESC
+		`).all((pluginRow as any).id);
+		
+		return versions;
+	});
+
 	fastify.post('/plugins', { onRequest: [fastify.authenticate] }, async (request, reply) => {
 		try {
 			const userId = (request.user as { userId: string; username: string }).userId;

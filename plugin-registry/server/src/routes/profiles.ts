@@ -81,9 +81,11 @@ export async function profileRoutes(fastify: FastifyInstance) {
 
 		// Verify all plugins exist and are approved
 		const pluginChecks = data.pluginIds.map(id => {
-			const plugin = db.prepare('SELECT id, status FROM plugins WHERE id = ?').get(id) as any;
+			const plugin = db.prepare('SELECT id FROM plugins WHERE id = ?').get(id) as any;
 			if (!plugin) throw new Error(`Plugin ${id} not found`);
-			if (plugin.status !== 'approved') throw new Error(`Plugin ${id} is not approved`);
+			
+			const approvedVersion = db.prepare("SELECT id FROM plugin_versions WHERE plugin_id = ? AND status = 'approved' LIMIT 1").get(id);
+			if (!approvedVersion) throw new Error(`Plugin ${id} has no approved versions`);
 			return plugin.id;
 		});
 
@@ -164,9 +166,11 @@ export async function profileRoutes(fastify: FastifyInstance) {
 
 		// Verify all plugins exist and are approved
 		const pluginChecks = data.pluginIds.map(id => {
-			const plugin = db.prepare('SELECT id, status FROM plugins WHERE id = ?').get(id) as any;
+			const plugin = db.prepare('SELECT id FROM plugins WHERE id = ?').get(id) as any;
 			if (!plugin) throw new Error(`Plugin ${id} not found`);
-			if (plugin.status !== 'approved') throw new Error(`Plugin ${id} is not approved`);
+			
+			const approvedVersion = db.prepare("SELECT id FROM plugin_versions WHERE plugin_id = ? AND status = 'approved' LIMIT 1").get(id);
+			if (!approvedVersion) throw new Error(`Plugin ${id} has no approved versions`);
 			return plugin.id;
 		});
 
