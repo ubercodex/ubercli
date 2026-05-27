@@ -6,7 +6,8 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "migrate": "tsx src/db/migrate.ts"
+    "migrate": "tsx src/db/migrate.ts",
+    "migrate:version-history": "tsx src/db/migrate-version-history.ts"
   },
   "dependencies": {
     "@fastify/cors": "^10.0.1",

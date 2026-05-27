@@ -21,18 +21,30 @@ export default function Installer({ pluginName, store, onSave, onBack }: Install
 			try {
 				const apiUrl = process.env.ZAL_REGISTRY_URL || 'https://zalcli.com/api';
 				
-				// Parse plugin name (format: author-pluginname)
-				const parts = pluginName.split('-');
+				// Parse plugin name (format: author-pluginname or author-pluginname@version)
+				let version: string | undefined;
+				let pluginNameWithoutVersion = pluginName;
+				
+				if (pluginName.includes('@')) {
+					const atIndex = pluginName.lastIndexOf('@');
+					pluginNameWithoutVersion = pluginName.substring(0, atIndex);
+					version = pluginName.substring(atIndex + 1);
+				}
+				
+				const parts = pluginNameWithoutVersion.split('-');
 				if (parts.length < 2) {
-					throw new Error('Invalid plugin name format. Use: author-pluginname');
+					throw new Error('Invalid plugin name format. Use: author-pluginname or author-pluginname@version');
 				}
 				
 				const author = parts[0];
 				const name = parts.slice(1).join('-');
 				
-				setMessage(`Downloading ${author}/${name}...`);
+				setMessage(`Downloading ${author}/${name}${version ? `@${version}` : ''}...`);
 				
-				const response = await fetch(`${apiUrl}/plugins/${author}/${name}`);
+				const url = version 
+					? `${apiUrl}/plugins/${author}/${name}?version=${version}`
+					: `${apiUrl}/plugins/${author}/${name}`;
+				const response = await fetch(url);
 				
 				if (!response.ok) {
 					if (response.status === 404) {

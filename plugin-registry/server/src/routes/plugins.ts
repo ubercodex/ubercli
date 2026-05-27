@@ -335,11 +335,16 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 				return reply.code(400).send({ error: 'No fields to update' });
 			}
 
-			params.push(existing.id);
+			params.push(plugin.id);
 
 				db.prepare(`UPDATE plugins SET ${updates.join(', ')} WHERE id = ?`).run(...params);
 
-			return { success: true, message: 'Plugin updated successfully' };
+			return { 
+				success: true, 
+				message: newVersionCreated ? `New version ${newVersion} created and pending approval` : 'Plugin updated successfully',
+				version: newVersion,
+				newVersionCreated
+			};
 		} catch (error: any) {
 			console.error('Plugin update error:', error);
 			if (error.name === 'ZodError') {
