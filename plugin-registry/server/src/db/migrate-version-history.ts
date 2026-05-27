@@ -7,6 +7,17 @@ const db = new Database(dbPath);
 console.log('Starting version history migration...');
 
 try {
+	// Check if migration is needed
+	const tableInfo = db.prepare("PRAGMA table_info(plugins)").all() as Array<{ name: string }>;
+	const hasVersionColumn = tableInfo.some(col => col.name === 'version');
+	
+	if (!hasVersionColumn) {
+		console.log('✅ Database already migrated to version history schema. Nothing to do.');
+		process.exit(0);
+	}
+
+	console.log('Found old schema. Starting migration...');
+
 	// Begin transaction
 	db.exec('BEGIN TRANSACTION');
 
