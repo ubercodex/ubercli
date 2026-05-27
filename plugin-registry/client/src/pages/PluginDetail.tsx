@@ -184,10 +184,24 @@ export default function PluginDetail() {
         {/* Installation */}
         <div className="bg-[#12121a]/80 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-8 mb-8 animate-fade-in-up delay-500">
           <h2 className="text-3xl font-bold text-white mb-6">Installation</h2>
-          <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="relative bg-[#0a0a0f] rounded-xl p-6 font-mono text-base border border-purple-500/30">
-              <span className="text-purple-400">zal /plugins install {author}-{plugin.name}</span>
+          
+          <div className="mb-4">
+            <p className="text-slate-400 text-sm mb-2">Install latest version (v{plugin.version}):</p>
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="relative bg-[#0a0a0f] rounded-xl p-6 font-mono text-base border border-purple-500/30">
+                <span className="text-purple-400">zal /plugins install {author}-{plugin.name}</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-slate-400 text-sm mb-2">Or install specific version:</p>
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/20 to-violet-600/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="relative bg-[#0a0a0f] rounded-xl p-6 font-mono text-base border border-cyan-500/30">
+                <span className="text-cyan-400">zal /plugins install {author}-{plugin.name}@{plugin.version}</span>
+              </div>
             </div>
           </div>
         </div>

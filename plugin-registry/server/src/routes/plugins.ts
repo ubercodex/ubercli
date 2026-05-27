@@ -161,13 +161,24 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 		if (version) {
 			versionRow = db.prepare('SELECT * FROM plugin_versions WHERE plugin_id = ? AND version = ?').get(pluginRow.id, version);
 		} else {
-			// Get latest approved version
-			versionRow = db.prepare(`
+			// Get latest approved version (order by version number descending)
+			const allApprovedVersions = db.prepare(`
 				SELECT * FROM plugin_versions 
 				WHERE plugin_id = ? AND status = 'approved' 
-				ORDER BY created_at DESC 
-				LIMIT 1
-			`).get(pluginRow.id);
+				ORDER BY created_at DESC
+			`).all(pluginRow.id) as any[];
+			
+			if (allApprovedVersions.length > 0) {
+				// Sort by semantic version (major.minor.patch)
+				allApprovedVersions.sort((a, b) => {
+					const [aMajor, aMinor, aPatch] = a.version.split('.').map(Number);
+					const [bMajor, bMinor, bPatch] = b.version.split('.').map(Number);
+					if (bMajor !== aMajor) return bMajor - aMajor;
+					if (bMinor !== aMinor) return bMinor - aMinor;
+					return bPatch - aPatch;
+				});
+				versionRow = allApprovedVersions[0];
+			}
 		}
 
 		if (!versionRow) {
