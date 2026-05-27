@@ -22,6 +22,7 @@ interface Plugin {
 	code: string;
 	parameters: PluginParameter[];
 	tags: string[];
+	model?: string;
 	downloads: number;
 	createdAt: string;
 	updatedAt: string;
@@ -42,6 +43,7 @@ const CreatePluginSchema = z.object({
 	code: z.string().min(1),
 	parameters: z.array(PluginParamSchema),
 	tags: z.array(z.string()).max(5),
+	model: z.string().optional(),
 });
 
 const UpdatePluginSchema = z.object({
@@ -88,6 +90,7 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 			code: row.code,
 			parameters: JSON.parse(row.parameters) as PluginParameter[],
 			tags: JSON.parse(row.tags) as string[],
+			model: row.model,
 			downloads: row.downloads,
 			createdAt: row.created_at,
 			updatedAt: row.updated_at,
@@ -110,6 +113,7 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 					code: string;
 					parameters: string;
 					tags: string;
+					model?: string;
 					downloads: number;
 					status: string;
 					created_at: string;
@@ -132,6 +136,7 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 			code: row.code,
 			parameters: JSON.parse(row.parameters) as PluginParameter[],
 			tags: JSON.parse(row.tags) as string[],
+			model: row.model,
 			downloads: row.downloads + 1,
 			createdAt: row.created_at,
 			updatedAt: row.updated_at,
@@ -155,8 +160,8 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 
 			const id = randomBytes(16).toString('hex');
 			db.prepare(
-				`INSERT INTO plugins (id, author, name, version, description, code, parameters, tags, author_id, status)
-	       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`
+				`INSERT INTO plugins (id, author, name, version, description, code, parameters, tags, model, author_id, status)
+	       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`
 			).run(
 				id,
 				username,
@@ -166,6 +171,7 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 				input.code,
 				JSON.stringify(input.parameters),
 				JSON.stringify(input.tags),
+				input.model || null,
 				userId
 			);
 

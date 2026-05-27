@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS plugins (
   code TEXT NOT NULL,
   parameters TEXT NOT NULL,
   tags TEXT NOT NULL,
+  model TEXT,
   downloads INTEGER DEFAULT 0,
   author_id TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'pending',
@@ -31,6 +32,7 @@ CREATE TABLE IF NOT EXISTS plugins (
 
 CREATE INDEX IF NOT EXISTS idx_plugins_author ON plugins(author);
 CREATE INDEX IF NOT EXISTS idx_plugins_tags ON plugins(tags);
+CREATE INDEX IF NOT EXISTS idx_plugins_model ON plugins(model);
 CREATE INDEX IF NOT EXISTS idx_plugins_downloads ON plugins(downloads DESC);
 CREATE INDEX IF NOT EXISTS idx_plugins_created ON plugins(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_plugins_status ON plugins(status);

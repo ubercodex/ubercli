@@ -12,6 +12,7 @@ interface Plugin {
   code: string;
   parameters: Array<{ name: string; type: string; description: string; required: boolean }>;
   tags: string[];
+  model?: string;
   downloads: number;
   createdAt: string;
   updatedAt: string;
@@ -84,7 +85,7 @@ export default function PluginDetail() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12 animate-fade-in-up delay-100">
+        <div className="grid md:grid-cols-4 gap-6 mb-12 animate-fade-in-up delay-100">
           <div className="relative group">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div className="relative p-6 bg-[#12121a]/80 backdrop-blur-xl border border-purple-500/20 rounded-2xl">
@@ -108,6 +109,15 @@ export default function PluginDetail() {
               </div>
             </div>
           </div>
+          {plugin.model && (
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="relative p-6 bg-[#12121a]/80 backdrop-blur-xl border border-cyan-500/20 rounded-2xl">
+                <div className="text-sm text-slate-500 mb-2">AI Model</div>
+                <div className="text-xl font-bold text-cyan-300">{plugin.model}</div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Description */}
