@@ -76,8 +76,8 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 				pv.status,
 				pv.created_at as version_created_at
 			FROM plugins p
-			INNER JOIN plugin_versions pv ON p.id = pv.plugin_id
-			INNER JOIN (
+			LEFT JOIN plugin_versions pv ON p.id = pv.plugin_id
+			LEFT JOIN (
 				SELECT plugin_id, MAX(created_at) as max_created
 				FROM plugin_versions
 				GROUP BY plugin_id
@@ -85,6 +85,9 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 		`;
 		const params: any[] = [];
 		const conditions: string[] = [];
+		
+		// Only show plugins that have at least one version
+		conditions.push("pv.id IS NOT NULL");
 		
 		if (author) {
 			// If author is specified, show all their plugins (any status)
@@ -95,9 +98,7 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 			conditions.push("pv.status = 'approved'");
 		}
 		
-		if (conditions.length > 0) {
-			query += " WHERE " + conditions.join(" AND ");
-		}
+		query += " WHERE " + conditions.join(" AND ");
 		
 		query += " ORDER BY p.created_at DESC";
 		
