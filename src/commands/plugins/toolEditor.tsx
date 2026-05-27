@@ -31,6 +31,12 @@ Output ONLY a JSON object with this exact shape (all fields required):
   "params": [{ "name": "...", "type": "string|number|boolean", "description": "...", "required": true|false }],
   "code": "// JS function body only — no wrapper\\nreturn { ... };"
 }
+
+CRITICAL: Parameters are passed as INDIVIDUAL FUNCTION ARGUMENTS, NOT as an object.
+- If param is "fileName", use: fileName (NOT params.fileName or args.fileName)
+- NEVER use: const { fileName } = params; ❌
+- Just use the parameter name directly ✅
+
 Preserve unchanged fields exactly. Only modify what the user asks for.
 Respond with ONLY the raw JSON — no markdown, no explanation.`;
 

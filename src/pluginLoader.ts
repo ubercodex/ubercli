@@ -18,14 +18,16 @@ function buildCustomTool(pluginTool: PluginTool) {
 	}
 
 	const code = pluginTool.code ?? '';
+	const paramNames = pluginTool.params.map(p => p.name);
 
 	return tool({
 		description: pluginTool.description,
 		inputSchema: z.object(shape),
 		execute: async (input: Record<string, unknown>) => {
 			try {
-				const fn = makeToolFn(Object.keys(input), code);
-				const result = await fn(...Object.values(input));
+				const fn = makeToolFn(paramNames, code);
+				const paramValues = paramNames.map(name => input[name]);
+				const result = await fn(...paramValues);
 				return result ?? { ok: true };
 			} catch (err) {
 				return { error: err instanceof Error ? err.message : String(err) };

@@ -35,10 +35,21 @@ Generate a JSON object with this exact shape:
   "code": "// JavaScript function body only — no function declaration wrapper\\n// Use only Node.js built-ins (fs, path, os, crypto, etc.) — no npm imports\\n// Return a plain object or primitive\\nreturn { result: ... };"
 }
 
-Rules:
+CRITICAL RULES FOR PARAMETERS:
+- Parameters are passed as INDIVIDUAL FUNCTION ARGUMENTS, NOT as an object
+- If you define a param named "fileName", access it directly as: fileName
+- NEVER use: params.fileName, args.fileName, input.fileName, or any object notation
+- NEVER destructure from params: const { fileName } = params; ❌ WRONG
+- Just use the parameter name directly: fileName ✅ CORRECT
+
+Example with parameter "targetPath":
+❌ WRONG: const { targetPath } = params; const fs = require('fs'); return fs.readFileSync(targetPath);
+✅ CORRECT: const fs = require('fs'); return fs.readFileSync(targetPath);
+
+Other Rules:
 - code is a JS function body. It runs inside: async function execute(param1, param2, ...) { <code> }
 - Use only Node.js built-ins available via require(), e.g. const os = require('os');
-- Always return something useful
+- Always return something useful (object, array, string, number, etc.)
 - Respond with ONLY the raw JSON, no markdown fences, no explanation`;
 
 function parseGenerated(raw: string): GeneratedTool {
