@@ -171,13 +171,13 @@ export default function PublishProfile() {
                 }}
                 required
                 maxLength={100}
-                pattern="^[a-z0-9]+(-[a-z0-9]+)*$"
-                placeholder="e.g., webdev, data-science, devops"
+                pattern="^[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+                placeholder="e.g., webdev, data-science, devops-tools"
                 className="relative w-full px-4 py-3 bg-[#12121a]/80 backdrop-blur-xl border border-purple-500/20 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 transition-all"
               />
             </div>
             <p className="mt-2 text-sm text-slate-500">
-              Kebab-case only: lowercase, numbers, hyphens (e.g., my-awesome-profile)
+              Must start with a letter, then lowercase letters, numbers, and hyphens (e.g., webdev-2024)
             </p>
           </div>
 

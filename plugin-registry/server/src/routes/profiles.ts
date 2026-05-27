@@ -8,7 +8,7 @@ const ProfileSchema = z.object({
 	name: z.string()
 		.min(1)
 		.max(100)
-		.regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Profile name must be in kebab-case (lowercase letters, numbers, and hyphens only)'),
+		.regex(/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/, 'Profile name must start with a letter, then lowercase letters, numbers, and hyphens only'),
 	description: z.string().min(1).max(500),
 	tags: z.array(z.string()).max(10),
 	pluginIds: z.array(z.string()).min(1).max(50),
