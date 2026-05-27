@@ -24,6 +24,7 @@ interface Plugin {
 	tags: string[];
 	model?: string;
 	downloads: number;
+	profileCount?: number;
 	createdAt: string;
 	updatedAt: string;
 	status: 'pending' | 'approved' | 'rejected';
@@ -81,21 +82,25 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 		query += " ORDER BY created_at DESC";
 		
 		const rows = db.prepare(query).all(...params) as any[];
-		const plugins: Plugin[] = rows.map((row) => ({
-			id: row.id,
-			author: row.author,
-			name: row.name,
-			version: row.version,
-			description: row.description,
-			code: row.code,
-			parameters: JSON.parse(row.parameters) as PluginParameter[],
-			tags: JSON.parse(row.tags) as string[],
-			model: row.model,
-			downloads: row.downloads,
-			createdAt: row.created_at,
-			updatedAt: row.updated_at,
-			status: row.status,
-		}));
+		const plugins: Plugin[] = rows.map((row) => {
+			const profileCount = db.prepare('SELECT COUNT(*) as count FROM profile_plugins WHERE plugin_id = ?').get(row.id) as { count: number };
+			return {
+				id: row.id,
+				author: row.author,
+				name: row.name,
+				version: row.version,
+				description: row.description,
+				code: row.code,
+				parameters: JSON.parse(row.parameters) as PluginParameter[],
+				tags: JSON.parse(row.tags) as string[],
+				model: row.model,
+				downloads: row.downloads,
+				profileCount: profileCount.count,
+				createdAt: row.created_at,
+				updatedAt: row.updated_at,
+				status: row.status,
+			};
+		});
 
 		return { plugins, total: plugins.length };
 	});
@@ -127,6 +132,8 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 
 		db.prepare('UPDATE plugins SET downloads = downloads + 1 WHERE id = ?').run(row.id);
 
+		const profileCount = db.prepare('SELECT COUNT(*) as count FROM profile_plugins WHERE plugin_id = ?').get(row.id) as { count: number };
+
 		const plugin: Plugin = {
 			id: row.id,
 			author: row.author,
@@ -138,6 +145,7 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 			tags: JSON.parse(row.tags) as string[],
 			model: row.model,
 			downloads: row.downloads + 1,
+			profileCount: profileCount.count,
 			createdAt: row.created_at,
 			updatedAt: row.updated_at,
 			status: row.status as 'pending' | 'approved' | 'rejected',
@@ -248,6 +256,22 @@ export async function pluginRoutes(fastify: FastifyInstance) {
 
 		if (author !== username) {
 			return reply.code(403).send({ error: 'You can only delete your own plugins' });
+		}
+
+		const plugin = db.prepare('SELECT id FROM plugins WHERE author = ? AND name = ?').get(author, name) as { id: string } | undefined;
+		
+		if (!plugin) {
+			return reply.code(404).send({ error: 'Plugin not found' });
+		}
+
+		const profileUsage = db.prepare('SELECT COUNT(*) as count FROM profile_plugins WHERE plugin_id = ?').get(plugin.id) as { count: number };
+		
+		if (profileUsage.count > 0) {
+			return reply.code(409).send({ 
+				error: 'Cannot delete plugin', 
+				message: `This plugin is used in ${profileUsage.count} profile${profileUsage.count > 1 ? 's' : ''}. Remove it from all profiles before deleting.`,
+				profileCount: profileUsage.count
+			});
 		}
 
 		const result = db.prepare('DELETE FROM plugins WHERE author = ? AND name = ?').run(author, name);

@@ -14,6 +14,7 @@ interface Plugin {
   tags: string[];
   model?: string;
   downloads: number;
+  profileCount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -103,22 +104,38 @@ export default function PluginDetail() {
           <div className="relative group">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div className="relative p-6 bg-[#12121a]/80 backdrop-blur-xl border border-purple-500/20 rounded-2xl">
+              <div className="text-sm text-slate-500 mb-2">Used in Profiles</div>
+              <div className="text-2xl font-bold text-white">{plugin.profileCount || 0}</div>
+            </div>
+          </div>
+          <div className="relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="relative p-6 bg-[#12121a]/80 backdrop-blur-xl border border-purple-500/20 rounded-2xl">
               <div className="text-sm text-slate-500 mb-2">Updated</div>
               <div className="text-2xl font-bold text-white">
                 {new Date(plugin.updatedAt).toLocaleDateString()}
               </div>
             </div>
           </div>
-          {plugin.model && (
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="relative p-6 bg-[#12121a]/80 backdrop-blur-xl border border-cyan-500/20 rounded-2xl">
-                <div className="text-sm text-slate-500 mb-2">AI Model</div>
-                <div className="text-xl font-bold text-cyan-300">{plugin.model}</div>
+        </div>
+        
+        {/* AI Model Badge (if available) */}
+        {plugin.model && (
+          <div className="mb-8 animate-fade-in-up delay-150">
+            <div className="relative group inline-block">
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 rounded-xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
+              <div className="relative px-6 py-3 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🤖</span>
+                  <div>
+                    <div className="text-xs text-slate-500">Generated with</div>
+                    <div className="text-lg font-bold text-cyan-300">{plugin.model}</div>
+                  </div>
+                </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Description */}
         <div className="bg-[#12121a]/80 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-8 mb-8 animate-fade-in-up delay-200">
