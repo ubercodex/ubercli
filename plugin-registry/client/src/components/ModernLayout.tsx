@@ -59,8 +59,8 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
       {/* Header */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? 'bg-[#0a0a0f]/90 backdrop-blur-xl border-b border-purple-500/10 shadow-lg shadow-purple-500/5' 
-          : 'bg-transparent'
+          ? 'bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-purple-500/20 shadow-lg shadow-purple-500/10' 
+          : 'bg-transparent border-b border-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -128,71 +128,109 @@ export default function ModernLayout({ children }: ModernLayoutProps) {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-500/30 transition-all group"
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/20 transition-all group"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-purple-500/30">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-lg shadow-purple-500/40 group-hover:shadow-purple-500/60 transition-all">
                     {user.username.substring(0, 2).toUpperCase()}
                   </div>
-                  <span className="text-sm font-medium text-slate-200">{user.username}</span>
-                  <svg className={`w-4 h-4 text-slate-400 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <span className="text-sm font-semibold text-white">{user.username}</span>
+                  <svg className={`w-4 h-4 text-purple-300 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
                 
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-56 bg-[#12121a] border border-purple-500/20 rounded-2xl shadow-2xl shadow-purple-500/10 overflow-hidden animate-scale-in">
+                  <div className="absolute right-0 mt-3 w-64 bg-[#12121a]/95 backdrop-blur-xl border border-purple-500/30 rounded-2xl shadow-2xl shadow-purple-500/20 overflow-hidden animate-scale-in z-50">
+                    {/* User Info Header */}
+                    <div className="px-4 py-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-b border-purple-500/30">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-lg">
+                          {user.username.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-white">{user.username}</div>
+                          <div className="text-xs text-purple-300">ZAL Developer</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Menu Items */}
                     <div className="p-2 space-y-1">
                       <Link
                         to="/publish"
                         onClick={() => setShowUserMenu(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-200 hover:bg-purple-500/10 rounded-xl transition-all"
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-200 hover:bg-purple-500/20 hover:text-white rounded-xl transition-all group"
                       >
-                        <span>📦</span>
+                        <span className="text-lg">📦</span>
                         <span>Publish Plugin</span>
+                        <svg className="w-4 h-4 ml-auto text-slate-500 group-hover:text-purple-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
                       </Link>
                       <Link
                         to="/publish-profile"
                         onClick={() => setShowUserMenu(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-200 hover:bg-purple-500/10 rounded-xl transition-all"
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-200 hover:bg-purple-500/20 hover:text-white rounded-xl transition-all group"
                       >
-                        <span>📋</span>
+                        <span className="text-lg">📋</span>
                         <span>Create Profile</span>
+                        <svg className="w-4 h-4 ml-auto text-slate-500 group-hover:text-purple-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
                       </Link>
                       <Link
                         to="/my-plugins"
                         onClick={() => setShowUserMenu(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-200 hover:bg-purple-500/10 rounded-xl transition-all"
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-200 hover:bg-purple-500/20 hover:text-white rounded-xl transition-all group"
                       >
-                        <span>🔧</span>
+                        <span className="text-lg">🔧</span>
                         <span>My Plugins</span>
+                        <svg className="w-4 h-4 ml-auto text-slate-500 group-hover:text-purple-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
                       </Link>
                       <Link
                         to="/my-profiles"
                         onClick={() => setShowUserMenu(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-200 hover:bg-purple-500/10 rounded-xl transition-all"
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-200 hover:bg-purple-500/20 hover:text-white rounded-xl transition-all group"
                       >
-                        <span>📋</span>
+                        <span className="text-lg">�</span>
                         <span>My Profiles</span>
+                        <svg className="w-4 h-4 ml-auto text-slate-500 group-hover:text-purple-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
                       </Link>
+                      
                       {user.isAdmin && (
-                        <Link
-                          to="/admin"
-                          onClick={() => setShowUserMenu(false)}
-                          className="flex items-center gap-3 px-4 py-3 text-sm text-yellow-400 hover:bg-yellow-500/10 rounded-xl transition-all border-t border-purple-500/20"
-                        >
-                          <span>⚡</span>
-                          <span>Admin Panel</span>
-                        </Link>
+                        <>
+                          <div className="my-2 border-t border-purple-500/20"></div>
+                          <Link
+                            to="/admin"
+                            onClick={() => setShowUserMenu(false)}
+                            className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-yellow-400 hover:bg-yellow-500/20 hover:text-yellow-300 rounded-xl transition-all group"
+                          >
+                            <span className="text-lg">⚡</span>
+                            <span>Admin Panel</span>
+                            <svg className="w-4 h-4 ml-auto text-yellow-500 group-hover:text-yellow-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Link>
+                        </>
                       )}
+                      
+                      <div className="my-2 border-t border-purple-500/20"></div>
                       <button
                         onClick={() => {
                           logout();
                           setShowUserMenu(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 rounded-xl transition-all"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-xl transition-all group"
                       >
-                        <span>🚪</span>
+                        <span className="text-lg">🚪</span>
                         <span>Sign Out</span>
+                        <svg className="w-4 h-4 ml-auto text-red-500 group-hover:text-red-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
                       </button>
                     </div>
                   </div>
