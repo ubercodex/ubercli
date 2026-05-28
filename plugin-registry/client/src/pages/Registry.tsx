@@ -167,16 +167,22 @@ export default function Registry() {
               {filtered.length} {filtered.length === 1 ? 'plugin' : 'plugins'} found
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filtered.map(plugin => (
+              {filtered.map((plugin, index) => (
                 <Link
                   key={plugin.id}
                   to={`/plugins/${plugin.author}/${plugin.name}`}
-                  className="p-6 bg-[#0d0d24]/60 backdrop-blur-xl border border-cyan-500/12 rounded-2xl hover:border-cyan-500/30 hover:shadow-lg hover:shadow-cyan-500/10 transition group"
+                  className="group relative animate-fade-in-up"
+                  style={{ animationDelay: `${index * 50}ms` }}
                 >
+                  {/* Glow Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/0 via-cyan-600/10 to-violet-600/0 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  
+                  {/* Card */}
+                  <div className="relative bg-[#12121a]/80 backdrop-blur-xl border border-cyan-500/10 rounded-2xl p-6 hover:border-cyan-500/30 transition-all">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h3 className="text-xl font-bold text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:to-violet-400 group-hover:bg-clip-text transition-all">
                           {plugin.name}
                         </h3>
                         {plugin.versionCount && plugin.versionCount > 1 && (
@@ -212,6 +218,7 @@ export default function Registry() {
                         +{plugin.tags.length - 3}
                       </span>
                     )}
+                  </div>
                   </div>
                 </Link>
               ))}
