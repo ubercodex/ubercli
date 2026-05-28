@@ -60,13 +60,17 @@ export default function Installer({ pluginName, store, onSave, onBack }: Install
 					throw new Error(`Plugin "${pluginName}" is not approved yet (status: ${plugin.status}). Only approved plugins can be installed.`);
 				}
 				
-				// Check if already installed
+				// Check if already installed with same version
 				const existing = store.tools.find(t => t.name === plugin.name);
 				if (existing) {
-					throw new Error(`Plugin "${plugin.name}" is already installed`);
+					if (existing.version === plugin.version) {
+						throw new Error(`Plugin "${plugin.name}" v${plugin.version} is already installed`);
+					}
+					// Different version - will upgrade/downgrade
+					setMessage(`Upgrading ${plugin.name} from v${existing.version} to v${plugin.version}...`);
+				} else {
+					setMessage('Installing plugin...');
 				}
-				
-				setMessage('Installing plugin...');
 				
 				// Create tool from plugin
 				const newTool: PluginTool = {
@@ -80,13 +84,23 @@ export default function Installer({ pluginName, store, onSave, onBack }: Install
 					version: plugin.version,
 				};
 				
+				// If upgrading, remove old version
+				let updatedTools = store.tools;
+				if (existing) {
+					updatedTools = store.tools.filter(t => t.id !== existing.id);
+				}
+				
 				// Add tool to the active profile
 				const activeProfileId = store.activeProfileId || 'default';
 				const updatedProfiles = store.profiles.map(profile => {
 					if (profile.id === activeProfileId) {
+						// If upgrading, replace the tool ID, otherwise add new
+						const toolIds = existing 
+							? profile.toolIds.map(id => id === existing.id ? newTool.id : id)
+							: [...profile.toolIds, newTool.id];
 						return {
 							...profile,
-							toolIds: [...profile.toolIds, newTool.id],
+							toolIds,
 						};
 					}
 					return profile;
@@ -95,7 +109,7 @@ export default function Installer({ pluginName, store, onSave, onBack }: Install
 				// Add to store
 				const updatedStore: PluginStore = {
 					...store,
-					tools: [...store.tools, newTool],
+					tools: [...updatedTools, newTool],
 					profiles: updatedProfiles,
 				};
 				
@@ -121,7 +135,8 @@ export default function Installer({ pluginName, store, onSave, onBack }: Install
 		};
 		
 		installPlugin();
-	}, [pluginName, store, onSave, onBack]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [pluginName]); // Only run when pluginName changes, not on store updates
 
 	const color = status === 'loading' ? theme.muted : status === 'success' ? 'green' : 'red';
 

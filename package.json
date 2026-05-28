@@ -1,6 +1,6 @@
 {
   "name": "zal",
-  "version": "0.1.70",
+  "version": "0.1.71",
   "description": "ZAL CLI - powered by Ink",
   "type": "module",
   "bin": {
